@@ -1,0 +1,3 @@
+[auth.email]
+enable_signup = true
+enable_confirmations = true

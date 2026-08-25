@@ -5,7 +5,7 @@ import { createAuthServerClient } from '@/lib/supabase/auth-server';
 export default async function OnboardingPage() {
   const supabase = createAuthServerClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
+  if (!user || !user.email_confirmed_at) redirect('/login');
 
   // Kobo Circle is intentionally single-estate at launch; streets still come from the database.
   const { data: estate } = await supabase.from('estates').select('id').limit(1).maybeSingle();

@@ -16,7 +16,8 @@ create table public.streets (
 create table public.users (
   id uuid primary key references auth.users(id) on delete cascade,
   name text not null,
-  phone text not null unique,
+  email text not null unique,
+  phone text,
   street_id uuid not null references public.streets(id),
   estate_id uuid not null references public.estates(id),
   created_at timestamptz not null default now()
@@ -67,6 +68,28 @@ create trigger users_street_estate_match
 before insert or update of street_id, estate_id on public.users
 for each row execute function public.assert_user_street_belongs_to_estate();
 
+-- A profile email is always the confirmed Auth account's email, never client input.
+create function public.assert_user_email_matches_auth_account()
+returns trigger
+language plpgsql
+security definer
+set search_path = auth, public
+as $$
+begin
+  if not exists (
+    select 1 from auth.users
+    where id = auth.uid() and email = new.email and email_confirmed_at is not null
+  ) then
+    raise exception 'profile email must match a confirmed signed-in auth account';
+  end if;
+  return new;
+end;
+$$;
+
+create trigger users_email_matches_auth_account
+before insert or update of email on public.users
+for each row execute function public.assert_user_email_matches_auth_account();
+
 -- Security-definer helpers avoid recursive RLS policy evaluation. They expose no data.
 create schema if not exists private;
 revoke all on schema private from public;
@@ -92,11 +115,29 @@ as $$
   )
 $$;
 
+-- This security-invoker function preserves RLS when retrieving the feed.
+create function public.listings_with_trust()
+returns table (id uuid, user_id uuid, estate_id uuid, type text, title text, price text, description text, status text, created_at timestamptz, seller_name text, street_name text, vouch_count bigint)
+language sql stable security invoker set search_path = public
+as $$
+  select l.id, l.user_id, l.estate_id, l.type, l.title, l.price, l.description, l.status,
+    l.created_at, u.name, s.name, count(v.id)
+  from public.listings l
+  join public.users u on u.id = l.user_id
+  join public.streets s on s.id = u.street_id
+  left join public.vouches v on v.vouched_for_id = u.id
+  where l.status = 'active'
+  group by l.id, u.name, s.name
+  order by l.created_at desc
+$$;
+
 revoke all on function private.current_user_estate_id() from public;
 revoke all on function private.is_same_estate(uuid) from public;
+revoke all on function public.listings_with_trust() from public;
 grant usage on schema private to authenticated;
 grant execute on function private.current_user_estate_id() to authenticated;
 grant execute on function private.is_same_estate(uuid) to authenticated;
+grant execute on function public.listings_with_trust() to authenticated;
 
 alter table public.estates enable row level security;
 alter table public.streets enable row level security;
@@ -110,8 +151,8 @@ for select to authenticated using (true);
 create policy "authenticated users can read streets" on public.streets
 for select to authenticated using (true);
 
-create policy "users can read their own profile" on public.users
-for select to authenticated using (id = auth.uid());
+create policy "users can read profiles in their estate" on public.users
+for select to authenticated using (estate_id = private.current_user_estate_id());
 create policy "users can create their own profile" on public.users
 for insert to authenticated with check (id = auth.uid());
 create policy "users can update their own profile" on public.users

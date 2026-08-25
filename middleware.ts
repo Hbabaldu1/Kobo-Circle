@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from '@/types/database';
 
-const PUBLIC_PATHS = new Set(['/login', '/onboarding']);
+const PUBLIC_PATHS = new Set(['/login', '/signup', '/check-email']);
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 export async function middleware(request: NextRequest) {
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
   const isPublicPath = PUBLIC_PATHS.has(request.nextUrl.pathname);
-  if (!user) {
+  if (!user || !user.email_confirmed_at) {
     if (isPublicPath) return response;
     return NextResponse.redirect(new URL('/login', request.url));
   }
