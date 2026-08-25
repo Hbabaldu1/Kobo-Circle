@@ -2,8 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from '@/types/database';
 
-// The confirmation callback must reach its route handler before a session exists.
-const PUBLIC_PATHS = new Set(['/login', '/signup', '/check-email', '/auth/callback']);
+const PUBLIC_PATHS = new Set(['/login', '/signup', '/check-email']);
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 export async function middleware(request: NextRequest) {

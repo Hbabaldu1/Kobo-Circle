@@ -19,8 +19,7 @@ export function LoginForm() {
     const { error: signInError } = await createClient().auth.signInWithPassword({ email, password });
     setLoading(false);
     if (signInError) {
-      console.error('Supabase sign-in failed.', signInError);
-      setError(signInError.message);
+      setError('We could not sign you in with those details. Confirm your email first, then try again.');
       return;
     }
     window.location.assign('/feed');
@@ -51,9 +50,9 @@ export function SignupForm() {
     setLoading(true);
     const validation = await fetch('/api/auth/validate-signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
     if (!validation.ok) { setError((await validation.json() as { error?: string }).error ?? 'Check your email and password.'); setLoading(false); return; }
-    const { error: signUpError } = await createClient().auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/auth/callback` } });
+    const { error: signUpError } = await createClient().auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/login` } });
     setLoading(false);
-    if (signUpError) { console.error('Supabase sign-up failed.', signUpError); setError(signUpError.message); return; }
+    if (signUpError) { setError(signUpError.message); return; }
     window.location.assign('/check-email');
   }
 
