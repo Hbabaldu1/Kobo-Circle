@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { checkOtpRateLimit } from '@/lib/otp-rate-limit';
 import { normalizeNigerianPhone } from '@/lib/phone';
 import type { Database } from '@/types/database';
 
 export const runtime = 'nodejs';
+
+type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 export async function POST(request: Request) {
   const body: unknown = await request.json().catch(() => null);
@@ -29,7 +31,7 @@ export async function POST(request: Request) {
   const supabase = createServerClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
     cookies: {
       getAll: () => cookieStore.getAll(),
-      setAll: (values) => values.forEach(({ name, value, options }) => response.cookies.set(name, value, options)),
+      setAll: (values: CookieToSet[]) => values.forEach(({ name, value, options }) => response.cookies.set(name, value, options)),
     },
   });
   const { error } = await supabase.auth.signInWithOtp({ phone });
