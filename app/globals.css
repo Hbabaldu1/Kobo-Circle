@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; --ink: #1B1F3B; --adire: #2F4B7C; --paper: #F6F1E7; --ochre: #D9A441; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #f6f1e7;
+  color: var(--ink);
+}
