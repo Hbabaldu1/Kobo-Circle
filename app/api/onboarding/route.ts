@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
-import { normalizeNigerianPhone } from '@/lib/phone';
 import { userProfileSchema } from '@/lib/validation';
 
 export async function POST(request: Request) {
@@ -9,8 +8,7 @@ export async function POST(request: Request) {
 
   const supabase = createAuthServerClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const verifiedPhone = user?.phone ? normalizeNigerianPhone(user.phone) : null;
-  if (!user || !verifiedPhone) return NextResponse.json({ error: 'Your session has expired. Please sign in again.' }, { status: 401 });
+  if (!user || !user.email_confirmed_at || !user.email) return NextResponse.json({ error: 'Confirm your email and sign in again.' }, { status: 401 });
 
   const { data: street } = await supabase
     .from('streets')
@@ -25,7 +23,8 @@ export async function POST(request: Request) {
   const { error } = await supabase.from('users').insert({
     id: user.id,
     name: parsed.data.name,
-    phone: verifiedPhone,
+    email: user.email,
+    phone: parsed.data.phone,
     street_id: street.id,
     estate_id: street.estate_id,
   });

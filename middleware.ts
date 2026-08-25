@@ -2,7 +2,8 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from '@/types/database';
 
-const PUBLIC_PATHS = new Set(['/login', '/onboarding']);
+// The confirmation callback must reach its route handler before a session exists.
+const PUBLIC_PATHS = new Set(['/login', '/signup', '/check-email', '/auth/callback']);
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 export async function middleware(request: NextRequest) {
@@ -26,7 +27,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
   const isPublicPath = PUBLIC_PATHS.has(request.nextUrl.pathname);
-  if (!user) {
+  if (!user || !user.email_confirmed_at) {
     if (isPublicPath) return response;
     return NextResponse.redirect(new URL('/login', request.url));
   }

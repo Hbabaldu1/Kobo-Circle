@@ -17,11 +17,13 @@ export const vouchSchema = z.object({
 });
 
 export const userProfileSchema = z.object({
-name: z.string().trim().min(2).max(60).transform((value) => DOMPurify.sanitize(value, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })),
-  phone: z.string().trim().min(7).max(20).regex(/^\+?[0-9][0-9\s()-]*$/, 'Enter a valid phone number.'),
+  name: z.string().trim().min(2).max(60).transform((value) => DOMPurify.sanitize(value, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })),
+  phone: z.string().trim().max(20).regex(/^$|^\+?[0-9][0-9\s()-]*$/, 'Enter a valid phone number.').transform((value) => value || null),
   streetId: z.string().uuid(),
-  estateId: z.string().uuid(),
 });
+
+export const signupSchema = z.object({ email: z.string().trim().email(), password: z.string().min(8).regex(/\d/) });
+export const loginSchema = z.object({ email: z.string().trim().email(), password: z.string().min(1).max(128) });
 
 export type ListingInput = z.infer<typeof listingSchema>;
 export type VouchInput = z.infer<typeof vouchSchema>;
