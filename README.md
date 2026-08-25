@@ -28,9 +28,6 @@ Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for a residential e
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-public-anon-key
    SUPABASE_SERVICE_ROLE_KEY=your-server-only-service-role-key
-   ```
-
-   `SUPABASE_SERVICE_ROLE_KEY` is used only by `lib/supabase/server.ts`, which imports `server-only`; never expose it in browser code. The anon key is configured now for future authenticated browser requests, but this scaffold does not yet initialize a browser client.
 
 4. Link the repository to the correct Supabase project, then apply the migration:
 
@@ -53,7 +50,6 @@ Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for a residential e
    npm run dev
    ```
 
-   Open [http://localhost:3000](http://localhost:3000). With valid environment values and the seed applied, the homepage confirms the live connection by showing “Golden Estate, Lekki.”
 
 ## Security and performance baseline
 

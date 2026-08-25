@@ -17,7 +17,7 @@ export const vouchSchema = z.object({
 });
 
 export const userProfileSchema = z.object({
-  name: plainText(120),
+name: z.string().trim().min(2).max(60).transform((value) => DOMPurify.sanitize(value, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })),
   phone: z.string().trim().min(7).max(20).regex(/^\+?[0-9][0-9\s()-]*$/, 'Enter a valid phone number.'),
   streetId: z.string().uuid(),
   estateId: z.string().uuid(),
