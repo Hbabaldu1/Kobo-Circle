@@ -1,0 +1,17 @@
+# dependencies and build output
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# local environment files and secrets
+.env*.local
+.env
+
+# Supabase local development state
+supabase/.temp/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
