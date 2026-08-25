@@ -1,3 +1,3 @@
-import { AuthCard } from '@/components/auth-card';
+import { LoginForm } from '@/components/login-form';
 
-export default function LoginPage() { return <AuthCard />; }
+export default function LoginPage() { return <LoginForm />; }

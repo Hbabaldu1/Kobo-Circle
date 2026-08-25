@@ -23,9 +23,9 @@ export interface Database {
         }];
       };
       users: { 
-        Row: { id: string; name: string; phone: string; street_id: string; estate_id: string; created_at: string }; 
-        Insert: { id: string; name: string; phone: string; street_id: string; estate_id: string; created_at?: string }; 
-        Update: Partial<{ name: string; phone: string; street_id: string; estate_id: string }>;
+        Row: { id: string; name: string; email: string; phone: string | null; street_id: string; estate_id: string; created_at: string };
+        Insert: { id: string; name: string; email: string; phone?: string | null; street_id: string; estate_id: string; created_at?: string };
+        Update: Partial<{ name: string; email: string; phone: string | null; street_id: string; estate_id: string }>;
         Relationships: [{
           foreignKeyName: 'users_estate_id_fkey';
           columns: ['estate_id'];
@@ -78,6 +78,6 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: { listings_with_trust: { Args: Record<string, never>; Returns: Array<{ id: string; user_id: string; estate_id: string; type: ListingType; title: string; price: string | null; description: string; status: ListingStatus; created_at: string; seller_name: string; street_name: string; vouch_count: number }> }; };
   };
 }
