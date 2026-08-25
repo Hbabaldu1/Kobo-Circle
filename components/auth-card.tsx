@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { createBrowserSupabaseClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 import { normalizeNigerianPhone } from '@/lib/phone';
 
 type Phase = 'phone' | 'otp';
@@ -41,7 +41,7 @@ export function AuthCard() {
   async function verifyCode(event: FormEvent) {
     event.preventDefault(); setError(''); setLoading(true);
     if (!/^\d{6}$/.test(otp)) { setLoading(false); setError('Enter the 6-digit code from your SMS.'); return; }
-    const supabase = createBrowserSupabaseClient();
+    const supabase = createClient();
     const { error: verifyError } = await supabase.auth.verifyOtp({ phone, token: otp, type: 'sms' });
     setLoading(false);
     if (verifyError) { setError('That code is incorrect or has expired. Request a new code and try again.'); return; }
