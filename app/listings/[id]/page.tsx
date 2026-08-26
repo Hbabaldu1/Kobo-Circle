@@ -1,7 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { ListingPhoto } from '@/components/listing-photo';
 import { TrustRing } from '@/components/feed-list';
-import { ListingStatusButtons } from '@/components/listing-status-buttons';
 import { WhatsAppShareButton } from '@/components/whatsapp-share-button';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { buildWhatsAppListingLink } from '@/lib/whatsapp';
@@ -31,7 +30,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
         <p className="mt-2 text-lg font-semibold text-adire">{listing.type === 'request' || !listing.price ? 'Looking to buy' : listing.price}</p>
         {listing.description && <p className="mt-5 whitespace-pre-wrap leading-7 text-slate-700">{listing.description}</p>}
         <div className="mt-6 flex items-center gap-3 border-t border-[#EFE7D6] pt-4">
-          <TrustRing id={listing.user_id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} avatarHref={listing.user_id === user.id ? '/profile' : `/sellers/${listing.user_id}`} percentage={trustPercentage} />
+          <TrustRing id={listing.user_id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} percentage={trustPercentage} />
           <div>
             <a href={`/sellers/${listing.user_id}`} className="font-semibold text-ink hover:underline">{seller.name}</a>
             <p className="text-sm text-slate-600">{street?.name ?? 'Estate neighbour'}</p>
@@ -45,7 +44,6 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           </div>
         )}
         {listing.user_id === user.id && <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} className="mt-5" />}
-        {listing.user_id === user.id && <ListingStatusButtons listingId={listing.id} status={listing.status} />}
       </article>
     </main>
   );

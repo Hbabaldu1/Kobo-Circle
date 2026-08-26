@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { UserAvatar } from '@/components/user-avatar';
 import type { ListingType } from '@/types/database';
 import { WhatsAppShareButton } from '@/components/whatsapp-share-button';
@@ -65,7 +66,12 @@ export function FeedList({
       <section className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3" aria-live="polite">
         {visible.length ? (
           visible.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} isOwner={listing.user_id === currentUserId} />
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              currentUserId={currentUserId}
+              isOwner={listing.user_id === currentUserId}
+            />
           ))
         ) : (
           <p className="rounded-xl bg-white p-5 text-sm text-slate-600 ring-1 ring-slate-200">
@@ -77,7 +83,15 @@ export function FeedList({
   );
 }
 
-function ListingCard({ listing, isOwner }: { listing: FeedListing; isOwner: boolean }) {
+function ListingCard({
+  listing,
+  currentUserId,
+  isOwner,
+}: {
+  listing: FeedListing;
+  currentUserId: string;
+  isOwner: boolean;
+}) {
   const percentage = Number(listing.trust_ratio) * 100;
   const label = listing.type === 'sale' ? 'For sale' : listing.type === 'service' ? 'Service' : 'Request';
 
@@ -86,19 +100,25 @@ function ListingCard({ listing, isOwner }: { listing: FeedListing; isOwner: bool
       <ListingPhoto photoUrl={listing.photo_url} type={listing.type} title={listing.title} />
       <p className="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-brick">{label}</p>
       <h2 className="mt-2 font-heading text-xl font-bold text-ink">
-        <a href={`/listings/${listing.id}`} className="hover:underline">
+        <Link href={`/listings/${listing.id}`} className="hover:underline">
           {listing.title}
-        </a>
+        </Link>
       </h2>
       <p className="mt-1 font-semibold text-adire">
         {listing.type === 'request' || !listing.price ? 'Looking to buy' : listing.price}
       </p>
       <div className="mt-4 flex items-center gap-3 border-t border-[#EFE7D6] pt-4">
-        <TrustRing id={listing.user_id} name={listing.seller_name} avatarUrl={listing.avatar_url ?? undefined} avatarHref={isOwner ? '/profile' : `/sellers/${listing.user_id}`} percentage={percentage} />
-        <a href={`/sellers/${listing.user_id}`}>
+        <TrustRing
+          id={listing.user_id}
+          name={listing.seller_name}
+          avatarUrl={listing.avatar_url ?? undefined}
+          percentage={percentage}
+          currentUserId={currentUserId}
+        />
+        <Link href={listing.user_id === currentUserId ? '/profile' : `/sellers/${listing.user_id}`}>
           <p className="font-semibold text-ink">{listing.seller_name}</p>
           <p className="text-sm text-slate-600">{listing.street_name}</p>
-        </a>
+        </Link>
         <span className="ml-auto font-mono text-sm font-semibold text-adire">{Math.round(percentage)}%</span>
       </div>
       {isOwner && <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} className="mt-4" />}
@@ -110,15 +130,15 @@ export function TrustRing({
   id,
   name,
   avatarUrl,
-  avatarHref,
   percentage,
+  currentUserId,
   animate = false,
 }: {
   id: string;
   name: string;
   avatarUrl?: string;
-  avatarHref?: string;
   percentage: number;
+  currentUserId?: string;
   animate?: boolean;
 }) {
   const ring = (
@@ -135,5 +155,11 @@ export function TrustRing({
     </div>
   );
 
-  return avatarHref ? <a href={avatarHref} className="cursor-pointer transition-opacity hover:opacity-90">{ring}</a> : ring;
+  const avatarHref = currentUserId ? (id === currentUserId ? '/profile' : `/sellers/${id}`) : `/sellers/${id}`;
+
+  return (
+    <Link href={avatarHref} className="cursor-pointer transition-opacity hover:opacity-90">
+      {ring}
+    </Link>
+  );
 }

@@ -32,16 +32,6 @@ export async function POST(request: Request) {
   const { email } = parsed.data;
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!supabaseUrl || !serviceRoleKey) {
-      console.error('Authentication validation is missing Supabase server configuration.');
-      return NextResponse.json({ error: 'Authentication is temporarily unavailable. Please try again.' }, { status: 503 });
-    }
-
-    // Service-role access is created only while handling a request, so a build
-    // does not require runtime-only Supabase credentials.
-    const adminClient = createClient(supabaseUrl, serviceRoleKey);
     const { data: existingUser, error: existingUserError } = await adminClient
       .from('users')
       .select('id')

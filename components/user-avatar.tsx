@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 // Brand palette for initial fallback avatars
@@ -41,7 +40,8 @@ export function UserAvatar({
 
   if (avatarUrl && !imgError) {
     return (
-      <Image
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
         src={avatarUrl}
         alt={name}
         onError={() => setImgError(true)}

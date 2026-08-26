@@ -86,10 +86,10 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <a href="/profile" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-ink transition-transform duration-100 hover:bg-white active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100">
+          <a href="/profile" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-ink transition hover:bg-white">
             My Profile
           </a>
-          <a href="/new-listing" className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white transition-transform duration-100 hover:opacity-90 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100">
+          <a href="/new-listing" className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90">
             Post listing
           </a>
         </div>

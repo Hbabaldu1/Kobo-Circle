@@ -75,7 +75,7 @@ export function ProfileAvatarUploader({
   return (
     <div className="shrink-0">
       <input ref={inputRef} id="profile-avatar" type="file" accept="image/*" onChange={handleAvatarChange} className="sr-only" />
-      <button type="button" onClick={() => inputRef.current?.click()} disabled={isUploading} aria-label="Upload profile photo" className="group relative rounded-full transition-transform duration-100 active:scale-95 disabled:cursor-wait disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100">
+      <button type="button" onClick={() => inputRef.current?.click()} disabled={isUploading} aria-label="Upload profile photo" className="group relative rounded-full disabled:cursor-wait disabled:opacity-70">
         <TrustRing id={id} name={name} avatarUrl={currentAvatarUrl} percentage={percentage} />
         <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 px-1 text-center text-[10px] font-semibold text-white opacity-0 transition-opacity duration-100 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">{isUploading ? 'Uploading…' : 'Change'}</span>
       </button>
