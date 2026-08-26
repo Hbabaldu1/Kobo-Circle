@@ -85,6 +85,6 @@ export interface Database {
         Relationships: [];
       };
     };
-    Functions: { listings_with_trust: { Args: Record<string, never>; Returns: Array<{ id: string; user_id: string; estate_id: string; type: ListingType; title: string; price: string | null; description: string; status: ListingStatus; created_at: string; seller_name: string; street_name: string; vouch_count: number }> }; };
+    Functions: Record<string, never>;
   };
 }
