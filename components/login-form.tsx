@@ -29,7 +29,7 @@ export function LoginForm() {
     <form onSubmit={submit} className="mt-6 space-y-4">
       <Field id="email" label="Email address" type="email" value={email} onChange={setEmail} autoComplete="email" />
       <Field id="password" label="Password" type="password" value={password} onChange={setPassword} autoComplete="current-password" />
-      <button disabled={loading} className="w-full rounded-lg bg-adire px-4 py-3 font-semibold text-white disabled:opacity-60">{loading ? 'Signing in…' : 'Sign in'}</button>
+      <button disabled={loading} className="w-full rounded-lg bg-adire px-4 py-3 font-semibold text-white transition-transform duration-100 active:scale-95 disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100">{loading ? 'Signing in…' : 'Sign in'}</button>
     </form>
     {error && <p role="alert" className="mt-4 text-sm text-brick">{error}</p>}
     <p className="mt-6 text-center text-sm text-slate-600">New to Kobo Circle? <Link href="/signup" className="font-semibold text-adire underline">Create an account</Link></p>
@@ -60,7 +60,7 @@ export function SignupForm() {
     <form onSubmit={submit} className="mt-6 space-y-4">
       <Field id="email" label="Email address" type="email" value={email} onChange={setEmail} autoComplete="email" />
       <div><Field id="password" label="Password" type="password" value={password} onChange={setPassword} autoComplete="new-password" /><p className={`mt-1 text-xs ${password && !passwordIsValid ? 'text-brick' : 'text-slate-500'}`}>At least 8 characters and one number.</p></div>
-      <button disabled={loading} className="w-full rounded-lg bg-adire px-4 py-3 font-semibold text-white disabled:opacity-60">{loading ? 'Creating account…' : 'Create account'}</button>
+      <button disabled={loading} className="w-full rounded-lg bg-adire px-4 py-3 font-semibold text-white transition-transform duration-100 active:scale-95 disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100">{loading ? 'Creating account…' : 'Create account'}</button>
     </form>
     {error && <p role="alert" className="mt-4 text-sm text-brick">{error}</p>}
     <p className="mt-6 text-center text-sm text-slate-600">Already have an account? <Link href="/login" className="font-semibold text-adire underline">Sign in</Link></p>

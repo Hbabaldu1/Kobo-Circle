@@ -1,0 +1,3 @@
+export default function MyProfileLoading() {
+  return <main className="mx-auto min-h-screen max-w-lg px-5 py-10"><div className="h-5 w-24 rounded skeleton-pulse" /><section className="mt-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200"><div className="flex items-center gap-4"><div className="h-14 w-14 rounded-full skeleton-pulse" /><div className="flex-1"><div className="h-8 w-40 rounded skeleton-pulse" /><div className="mt-2 h-4 w-32 rounded skeleton-pulse" /></div></div><div className="mt-6 space-y-3">{[0, 1, 2].map((item) => <div key={item} className="h-5 w-full rounded skeleton-pulse" />)}</div><div className="mt-6 h-12 w-full rounded-lg skeleton-pulse" /></section></main>;
+}

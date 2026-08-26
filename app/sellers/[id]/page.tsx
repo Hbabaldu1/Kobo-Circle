@@ -2,6 +2,9 @@ import { notFound, redirect } from 'next/navigation';
 import { SellerProfile } from '@/components/seller-profile';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 
+type VouchRow = { id: string; voucher_id: string; note: string | null; created_at: string };
+type VoucherRow = { id: string; name: string };
+
 export default async function SellerPage({ params }: { params: { id: string } }) {
   const supabase = createAuthServerClient();
   const { data: { user } } = await supabase.auth.getUser();

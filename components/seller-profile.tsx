@@ -2,15 +2,19 @@
 
 import { useCallback, useState } from 'react';
 import { TrustRing } from '@/components/feed-list';
+import { UserAvatar } from '@/components/user-avatar';
 import { VouchButton } from '@/components/vouch-button';
 import { buildWhatsAppListingLink } from '@/lib/whatsapp';
 
 export function SellerProfile({ sellerId, name, streetName, initialVouchCount, initialTrustRatio, notes, isOwner, phone, listingTitle }: { sellerId: string; name: string; streetName: string; initialVouchCount: number; initialTrustRatio: number; phone: string | null; listingTitle: string | null; notes: Array<{ id: string; note: string | null; created_at: string }>; isOwner: boolean }) {
   const [vouchCount, setVouchCount] = useState(initialVouchCount);
   const [trustRatio, setTrustRatio] = useState(initialTrustRatio);
+  const [justVouched, setJustVouched] = useState(false);
   const handleVouched = useCallback(() => {
     setVouchCount((count) => count + 1);
     setTrustRatio((ratio) => Math.min(ratio + (1 / 12), 1));
+    setJustVouched(true);
+    window.setTimeout(() => setJustVouched(false), 180);
   }, []);
   const percentage = trustRatio * 100;
   const whatsappLink = listingTitle ? buildWhatsAppListingLink(phone, listingTitle) : null;

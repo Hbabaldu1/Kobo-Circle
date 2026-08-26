@@ -111,7 +111,7 @@ export function OnboardingForm({ streets }: { streets: Array<{ id: string; name:
           </div>
           <button
             disabled={loading || streets.length === 0}
-            className="w-full rounded-lg bg-adire px-4 py-3 font-semibold text-white disabled:opacity-60"
+            className="w-full rounded-lg bg-adire px-4 py-3 font-semibold text-white transition-transform duration-100 active:scale-95 disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100"
           >
             {loading ? 'Saving…' : 'Continue to Kobo Circle'}
           </button>
