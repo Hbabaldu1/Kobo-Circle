@@ -24,6 +24,7 @@ export const listingSchema = z.object({
   title: z.string().min(1).max(120).transform(cleanText),
   price: z.string().max(50).optional(),
   description: z.string().max(500).optional().transform((v) => (v ? cleanText(v) : v)),
+  photo_url: z.string().url().optional(),
 });
 
 export const vouchNoteSchema = z.object({

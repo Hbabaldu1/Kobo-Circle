@@ -41,9 +41,9 @@ export interface Database {
         }];
       };
       listings: {
-        Row: { id: string; user_id: string; estate_id: string; type: ListingType; title: string; price: string | null; description: string | null; status: ListingStatus; created_at: string };
-        Insert: { id?: string; user_id: string; estate_id: string; type: ListingType; title: string; price?: string | null; description?: string | null; status?: ListingStatus; created_at?: string };
-        Update: Partial<{ title: string; price: string | null; description: string | null; status: ListingStatus }>;
+        Row: { id: string; user_id: string; estate_id: string; type: ListingType; title: string; price: string | null; description: string | null; photo_url: string | null; status: ListingStatus; created_at: string };
+        Insert: { id?: string; user_id: string; estate_id: string; type: ListingType; title: string; price?: string | null; description?: string | null; photo_url?: string | null; status?: ListingStatus; created_at?: string };
+        Update: Partial<{ title: string; price: string | null; description: string | null; photo_url: string | null; status: ListingStatus }>;
         Relationships: [{
           foreignKeyName: 'listings_estate_id_fkey';
           columns: ['estate_id'];

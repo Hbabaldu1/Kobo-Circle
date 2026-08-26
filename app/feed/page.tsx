@@ -15,6 +15,7 @@ type ListingRow = {
   description: string | null;
   status: 'active' | 'sold' | 'closed';
   created_at: string;
+  photo_url: string | null;
 };
 
 type SellerRow = { id: string; name: string; street_id: string };
@@ -31,7 +32,7 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
 
   const { data: listingRows } = await supabase
     .from('listings')
-    .select('id, user_id, estate_id, type, title, price, description, status, created_at')
+    .select('id, user_id, estate_id, type, title, price, description, status, created_at, photo_url')
     .eq('estate_id', profile.estate_id)
     .eq('status', 'active')
     .order('created_at', { ascending: false });
@@ -66,6 +67,7 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
       type: listing.type,
       title: listing.title,
       price: listing.price,
+      photo_url: listing.photo_url,
       seller_name: seller.name,
       street_name: streetById.get(seller.street_id)?.name ?? 'Estate neighbour',
       vouch_count: trust?.vouch_count ?? 0,
@@ -73,5 +75,5 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
     }];
   });
 
-  return <main className="mx-auto min-h-screen max-w-lg px-5 py-10"><div className="flex items-start justify-between gap-4"><LogoutButton /><div><p className="font-heading text-sm font-bold uppercase tracking-[0.18em] text-adire">Kobo Circle</p><h1 className="mt-2 font-heading text-3xl font-bold text-ink">Your estate feed</h1></div><a href="/new-listing" className="shrink-0 rounded-lg bg-adire px-3 py-2 text-sm font-semibold text-white">Post listing</a></div><p className="mt-2 text-sm text-slate-600">Trusted finds and helpful neighbours, close to home.</p>{listings.length ? <FeedList listings={listings} currentUserId={user.id} postedListingId={searchParams.posted ?? null} /> : <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200"><h2 className="font-heading text-xl font-bold text-ink">Start the conversation</h2><p className="mt-2 leading-6 text-slate-600">There are no listings in your estate yet. Be the first neighbour to share something useful.</p><a href="/new-listing" className="mt-4 inline-block rounded-lg bg-adire px-4 py-3 font-semibold text-white">Post a listing</a></section>}</main>;
+  return <main className="mx-auto min-h-screen max-w-2xl px-5 lg:max-w-6xl py-10"><div className="flex items-start justify-between gap-4"><LogoutButton /><div><p className="font-heading text-sm font-bold uppercase tracking-[0.18em] text-adire">Kobo Circle</p><h1 className="mt-2 font-heading text-3xl font-bold text-ink">Your estate feed</h1></div><a href="/new-listing" className="shrink-0 rounded-lg bg-adire px-3 py-2 text-sm font-semibold text-white">Post listing</a></div><p className="mt-2 text-sm text-slate-600">Trusted finds and helpful neighbours, close to home.</p>{listings.length ? <FeedList listings={listings} currentUserId={user.id} postedListingId={searchParams.posted ?? null} /> : <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200"><h2 className="font-heading text-xl font-bold text-ink">Start the conversation</h2><p className="mt-2 leading-6 text-slate-600">There are no listings in your estate yet. Be the first neighbour to share something useful.</p><a href="/new-listing" className="mt-4 inline-block rounded-lg bg-adire px-4 py-3 font-semibold text-white">Post a listing</a></section>}</main>;
 }
