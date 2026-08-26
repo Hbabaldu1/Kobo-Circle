@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { ProfileAvatarUploader } from '@/components/profile-avatar-uploader';
 import { ProfileForm } from '@/components/profile-form';
+import { LogoutButton } from '@/components/logout-button';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 
 export default async function MyProfilePage() {

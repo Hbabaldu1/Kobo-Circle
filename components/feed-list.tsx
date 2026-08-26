@@ -119,7 +119,7 @@ export function TrustRing({
   percentage: number;
   animate?: boolean;
 }) {
-  return (
+  const ring = (
     <div
       aria-label={`${Math.round(percentage)}% neighbour trust`}
       className={`grid h-12 w-12 shrink-0 place-items-center rounded-full transition-[background] duration-150 motion-reduce:transition-none ${
@@ -132,4 +132,6 @@ export function TrustRing({
       </div>
     </div>
   );
+
+  return avatarHref ? <a href={avatarHref} className="cursor-pointer transition-opacity hover:opacity-90">{ring}</a> : ring;
 }

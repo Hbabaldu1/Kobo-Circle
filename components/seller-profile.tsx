@@ -17,6 +17,7 @@ export function SellerProfile({
   phone,
   avatarUrl,
   listingTitle,
+  currentUserId,
 }: {
   sellerId: string;
   name: string;

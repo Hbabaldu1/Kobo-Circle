@@ -11,6 +11,7 @@ try {
 const nextConfig = {
   poweredByHeader: false,
   images: {
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31_536_000,
     remotePatterns: supabaseImageHost

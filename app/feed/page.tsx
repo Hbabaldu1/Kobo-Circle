@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { FeedList, type FeedListing } from '@/components/feed-list';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
-import { LogoutButton } from '@/components/logout-button';
 
 export const revalidate = 60;
 
@@ -86,12 +85,13 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
           <p className="mt-2 text-sm text-slate-600">Trusted finds and helpful neighbours, close to home.</p>
         </div>
 
-        {/* Repositioned Action Buttons */}
         <div className="flex items-center gap-3 shrink-0">
+          <a href="/profile" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-ink transition hover:bg-white">
+            My Profile
+          </a>
           <a href="/new-listing" className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90">
             Post listing
           </a>
-          <LogoutButton />
         </div>
       </div>
 
