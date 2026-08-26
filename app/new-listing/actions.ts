@@ -18,6 +18,7 @@ export async function createListing(
         ? undefined
         : (formData.get('price') as string) || undefined,
     description: (formData.get('description') as string) || undefined,
+    photo_url: (formData.get('photo_url') as string) || undefined,
   });
 
   if (!parsed.success) {
