@@ -40,6 +40,7 @@ export function UserAvatar({
 
   if (avatarUrl && !imgError) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={avatarUrl}
         alt={name}
