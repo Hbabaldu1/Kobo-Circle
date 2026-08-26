@@ -34,7 +34,15 @@ export function OnboardingForm({ streets }: { streets: Array<{ id: string; name:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(validated.data),
       });
-      const payload = (await response.json()) as { error?: string };
+
+      let payload: { error?: string };
+      try {
+        payload = await response.json();
+      } catch {
+        console.error(`Onboarding request returned non-JSON response, status ${response.status}`);
+        setError(`Something went wrong on our end (${response.status}). Please try again.`);
+        return;
+      }
 
       if (!response.ok) {
         setError(payload.error ?? 'We could not save your details. Please try again.');
@@ -43,7 +51,8 @@ export function OnboardingForm({ streets }: { streets: Array<{ id: string; name:
 
       router.replace('/feed');
       router.refresh();
-    } catch {
+    } catch (err) {
+      console.error('Onboarding request failed:', err);
       setError('Connection issue — check your network and try again.');
     } finally {
       setLoading(false);
