@@ -102,7 +102,7 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
         <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
           <h2 className="font-heading text-xl font-bold text-ink">Start the conversation</h2>
           <p className="mt-2 leading-6 text-slate-600">There are no listings in your estate yet. Be the first neighbour to share something useful.</p>
-          <a href="/new-listing" className="mt-4 inline-block rounded-lg bg-adire px-4 py-3 font-semibold text-white">
+          <a href="/new-listing" className="mt-4 inline-block rounded-lg bg-adire px-4 py-3 font-semibold text-white transition-transform duration-100 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100">
             Post a listing
           </a>
         </section>

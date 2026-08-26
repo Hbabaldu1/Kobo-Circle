@@ -55,7 +55,7 @@ export function FeedList({
             key={type}
             type="button"
             onClick={() => setFilter(type)}
-            className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${
+            className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-transform duration-100 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100 ${
               filter === type ? 'bg-adire text-white' : 'bg-[#EFE7D6] text-ink'
             }`}
           >

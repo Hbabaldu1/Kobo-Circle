@@ -1,6 +1,6 @@
 # Kobo Circle
 
-Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for a residential estate. This initial scaffold intentionally contains only the secure data foundation and a Supabase connection-status homepage—no authentication, marketplace screens, or feed logic yet.
+Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for residential estates. Neighbours can sign up, complete estate onboarding, post listings, vouch for sellers, and contact trusted sellers through WhatsApp.
 
 ## Prerequisites
 
@@ -28,6 +28,7 @@ Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for a residential e
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-public-anon-key
    SUPABASE_SERVICE_ROLE_KEY=your-server-only-service-role-key
+   ```
 
 4. Link the repository to the correct Supabase project, then apply the migration:
 
@@ -54,6 +55,6 @@ Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for a residential e
 ## Security and performance baseline
 
 - Every database table has RLS enabled. The migration provides authenticated-only policies, estate-scoped listing reads and writes, self-vouch prevention, and duplicate-vouch prevention.
-- Shared Zod schemas validate listing and vouch inputs on both client and server integration points. DOMPurify sanitizes all user text before it is rendered.
-- The homepage caches the public seed lookup for five minutes. Future image uploads must use `next/image` with explicit dimensions; Next is configured to prefer AVIF/WebP and cache optimized images.
+- Shared Zod schemas validate user and listing input at the appropriate client and server boundaries. User text is rendered through React's escaped JSX text nodes.
+- Profile and listing images use `next/image`; image optimization is disabled intentionally so the app can be bundled for a WebView/Capacitor target without requiring a Next.js image server.
 - `public/manifest.json` and iOS metadata make the app installable as a standalone PWA.

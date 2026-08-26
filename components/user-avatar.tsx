@@ -45,6 +45,8 @@ export function UserAvatar({
         src={avatarUrl}
         alt={name}
         onError={() => setImgError(true)}
+        width={48}
+        height={48}
         className={`rounded-full object-cover shrink-0 ${className}`}
       />
     );

@@ -10,7 +10,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
   // RLS on listings ensures this query cannot return a cross-estate listing.
-  const { data: listing } = await supabase.from('listings').select('id, user_id, type, title, price, description, created_at, photo_url').eq('id', params.id).maybeSingle();
+  const { data: listing } = await supabase.from('listings').select('id, user_id, type, title, price, description, status, created_at, photo_url').eq('id', params.id).maybeSingle();
   if (!listing) notFound();
   const { data: seller } = await supabase.from('users').select('name, phone, avatar_url, street_id').eq('id', listing.user_id).maybeSingle();
   if (!seller) notFound();

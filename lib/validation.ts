@@ -28,7 +28,3 @@ export const listingSchema = z.object({
   description: z.string().max(500).optional().transform((v) => (v ? cleanText(v) : v)),
   photo_url: z.string().url().optional(),
 });
-
-export const vouchNoteSchema = z.object({
-  note: z.string().max(200).optional().transform((v) => (v ? cleanText(v) : v)),
-});

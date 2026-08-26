@@ -7,14 +7,6 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Enter your password.'),
 });
 
-// Service-role client: server-only, never exposed to the browser.
-// Used here only to read/write the rate-limit table, which is
-// intentionally not covered by RLS since no authenticated user exists yet.
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 const MAX_ATTEMPTS = 5;
 const WINDOW_MINUTES = 15;
 
@@ -37,6 +29,16 @@ export async function POST(request: Request) {
   const { email } = parsed.data;
 
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error('Authentication validation is missing Supabase server configuration.');
+      return NextResponse.json({ error: 'Authentication is temporarily unavailable. Please try again.' }, { status: 503 });
+    }
+
+    // Service-role access is created only while handling a request, so a build
+    // does not require runtime-only Supabase credentials.
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
     const windowStart = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000).toISOString();
 
     const { count, error: countError } = await adminClient

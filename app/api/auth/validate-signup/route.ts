@@ -10,13 +10,6 @@ const signupSchema = z.object({
     .regex(/\d/, 'Include at least one number.'),
 });
 
-// Service-role client: server-only, used here only to enforce the
-// signup rate limit before Supabase ever sends a confirmation email.
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 const MAX_SIGNUP_ATTEMPTS = 3;
 const WINDOW_MINUTES = 60;
 
