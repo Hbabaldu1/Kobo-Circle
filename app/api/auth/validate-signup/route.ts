@@ -39,6 +39,21 @@ export async function POST(request: Request) {
   const { email } = parsed.data;
 
   try {
+    const { data: existingUser, error: existingUserError } = await adminClient
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingUserError) {
+      console.error('Duplicate email check failed:', existingUserError.message);
+      return NextResponse.json({ error: 'We could not verify this email address. Please try again.' }, { status: 500 });
+    }
+
+    if (existingUser) {
+      return NextResponse.json({ error: 'This email address is already registered to another account.' }, { status: 409 });
+    }
+
     const windowStart = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000).toISOString();
 
     const { count, error: countError } = await adminClient
