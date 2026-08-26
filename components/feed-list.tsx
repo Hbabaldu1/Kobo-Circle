@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { UserAvatar } from '@/components/user-avatar';
 import type { ListingType } from '@/types/database';
 import { WhatsAppShareButton } from '@/components/whatsapp-share-button';
