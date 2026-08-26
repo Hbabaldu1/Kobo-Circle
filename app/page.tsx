@@ -1,27 +1,8 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { createAuthServerClient } from '@/lib/supabase/auth-server';
 
 export const revalidate = 300;
 
-export default async function HomePage() {
-  const supabase = createAuthServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // A returning, confirmed user should never see the marketing page —
-  // send them straight to what they actually came here for.
-  if (user && user.email_confirmed_at) {
-    const { data: profile } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    redirect(profile ? '/feed' : '/onboarding');
-  }
-
+export default function HomePage() {
   return (
     <main className="min-h-screen bg-paper">
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-5 py-5">
@@ -29,16 +10,10 @@ export default async function HomePage() {
           Kobo Circle
         </span>
         <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-ink hover:bg-white"
-          >
+          <Link href="/login" className="rounded-lg px-4 py-2 text-sm font-semibold text-ink hover:bg-white">
             Log in
           </Link>
-          <Link
-            href="/signup"
-            className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white"
-          >
+          <Link href="/signup" className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white">
             Join your estate
           </Link>
         </div>
@@ -53,16 +28,10 @@ export default async function HomePage() {
           real vouches from people nearby — not stars from strangers.
         </p>
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href="/signup"
-            className="w-full rounded-lg bg-adire px-6 py-3.5 text-center font-semibold text-white sm:w-auto"
-          >
+          <Link href="/signup" className="w-full rounded-lg bg-adire px-6 py-3.5 text-center font-semibold text-white sm:w-auto">
             Join your estate
           </Link>
-          <Link
-            href="/login"
-            className="w-full rounded-lg border border-slate-300 px-6 py-3.5 text-center font-semibold text-ink sm:w-auto"
-          >
+          <Link href="/login" className="w-full rounded-lg border border-slate-300 px-6 py-3.5 text-center font-semibold text-ink sm:w-auto">
             I already have an account
           </Link>
         </div>
@@ -70,18 +39,9 @@ export default async function HomePage() {
 
       <section className="mx-auto max-w-4xl px-5 pb-24">
         <div className="grid gap-5 sm:grid-cols-3">
-          <FeatureCard
-            title="Hyperlocal, not global"
-            body="Your feed is scoped to your own estate — not the whole city, not the whole internet."
-          />
-          <FeatureCard
-            title="Trust, not stars"
-            body="A trust ring builds from real vouches by people who've actually dealt with a seller."
-          />
-          <FeatureCard
-            title="Share where you already talk"
-            body="Post once, share to WhatsApp in one tap — no new app your neighbours have to learn."
-          />
+          <FeatureCard title="Hyperlocal, not global" body="Your feed is scoped to your own estate — not the whole city, not the whole internet." />
+          <FeatureCard title="Trust, not stars" body="A trust ring builds from real vouches by people who've actually dealt with a seller." />
+          <FeatureCard title="Share where you already talk" body="Post once, share to WhatsApp in one tap — no new app your neighbours have to learn." />
         </div>
       </section>
 
