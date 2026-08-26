@@ -14,6 +14,7 @@ export type FeedListing = {
   price: string | null;
   photo_url: string | null;
   seller_name: string;
+  avatar_url: string | null;
   street_name: string;
   vouch_count: number;
   trust_ratio: number;
@@ -53,7 +54,7 @@ export function FeedList({
             key={type}
             type="button"
             onClick={() => setFilter(type)}
-            className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${
+            className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-transform duration-100 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100 ${
               filter === type ? 'bg-adire text-white' : 'bg-[#EFE7D6] text-ink'
             }`}
           >
@@ -93,8 +94,7 @@ function ListingCard({ listing, isOwner }: { listing: FeedListing; isOwner: bool
         {listing.type === 'request' || !listing.price ? 'Looking to buy' : listing.price}
       </p>
       <div className="mt-4 flex items-center gap-3 border-t border-[#EFE7D6] pt-4">
-        {/* Fixed: Added id prop */}
-        <TrustRing id={listing.user_id} name={listing.seller_name} percentage={percentage} />
+        <TrustRing id={listing.user_id} name={listing.seller_name} avatarUrl={listing.avatar_url ?? undefined} avatarHref={isOwner ? '/profile' : `/sellers/${listing.user_id}`} percentage={percentage} />
         <a href={`/sellers/${listing.user_id}`}>
           <p className="font-semibold text-ink">{listing.seller_name}</p>
           <p className="text-sm text-slate-600">{listing.street_name}</p>
@@ -109,15 +109,19 @@ function ListingCard({ listing, isOwner }: { listing: FeedListing; isOwner: bool
 export function TrustRing({
   id,
   name,
+  avatarUrl,
+  avatarHref,
   percentage,
   animate = false,
 }: {
   id: string;
   name: string;
+  avatarUrl?: string;
+  avatarHref?: string;
   percentage: number;
   animate?: boolean;
 }) {
-  return (
+  const ring = (
     <div
       aria-label={`${Math.round(percentage)}% neighbour trust`}
       className={`grid h-12 w-12 shrink-0 place-items-center rounded-full transition-[background] duration-150 motion-reduce:transition-none ${
@@ -126,8 +130,10 @@ export function TrustRing({
       style={{ background: `conic-gradient(#D9A441 ${percentage * 3.6}deg, #EFE7D6 0deg)` }}
     >
       <div className="grid h-9 w-9 place-items-center rounded-full bg-paper">
-        <UserAvatar id={id} name={name} className="h-8 w-8 text-sm" />
+        <UserAvatar id={id} name={name} avatarUrl={avatarUrl} className="h-8 w-8 text-sm" />
       </div>
     </div>
   );
+
+  return avatarHref ? <a href={avatarHref} className="cursor-pointer transition-opacity hover:opacity-90">{ring}</a> : ring;
 }

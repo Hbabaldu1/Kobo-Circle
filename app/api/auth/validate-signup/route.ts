@@ -10,13 +10,6 @@ const signupSchema = z.object({
     .regex(/\d/, 'Include at least one number.'),
 });
 
-// Service-role client: server-only, used here only to enforce the
-// signup rate limit before Supabase ever sends a confirmation email.
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 const MAX_SIGNUP_ATTEMPTS = 3;
 const WINDOW_MINUTES = 60;
 
@@ -39,6 +32,31 @@ export async function POST(request: Request) {
   const { email } = parsed.data;
 
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error('Authentication validation is missing Supabase server configuration.');
+      return NextResponse.json({ error: 'Authentication is temporarily unavailable. Please try again.' }, { status: 503 });
+    }
+
+    // Service-role access is created only while handling a request, so a build
+    // does not require runtime-only Supabase credentials.
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    const { data: existingUser, error: existingUserError } = await adminClient
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingUserError) {
+      console.error('Duplicate email check failed:', existingUserError.message);
+      return NextResponse.json({ error: 'We could not verify this email address. Please try again.' }, { status: 500 });
+    }
+
+    if (existingUser) {
+      return NextResponse.json({ error: 'This email address is already registered to another account.' }, { status: 409 });
+    }
+
     const windowStart = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000).toISOString();
 
     const { count, error: countError } = await adminClient

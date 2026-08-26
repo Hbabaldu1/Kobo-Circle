@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { FeedList, type FeedListing } from '@/components/feed-list';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
-import { LogoutButton } from '@/components/logout-button';
 
 export const revalidate = 60;
 
@@ -18,7 +17,7 @@ type ListingRow = {
   photo_url: string | null;
 };
 
-type SellerRow = { id: string; name: string; street_id: string };
+type SellerRow = { id: string; name: string; avatar_url: string | null; street_id: string };
 type StreetRow = { id: string; name: string };
 type TrustRow = { user_id: string; vouch_count: number; trust_ratio: number };
 
@@ -42,7 +41,7 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
 
   const [{ data: sellerRows }, { data: trustRows }] = sellerIds.length
     ? await Promise.all([
-        supabase.from('users').select('id, name, street_id').in('id', sellerIds),
+        supabase.from('users').select('id, name, avatar_url, street_id').in('id', sellerIds),
         supabase.from('seller_trust').select('user_id, vouch_count, trust_ratio').in('user_id', sellerIds),
       ])
     : [{ data: [] as SellerRow[] }, { data: [] as TrustRow[] }];
@@ -69,6 +68,7 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
       price: listing.price,
       photo_url: listing.photo_url,
       seller_name: seller.name,
+      avatar_url: seller.avatar_url,
       street_name: streetById.get(seller.street_id)?.name ?? 'Estate neighbour',
       vouch_count: trust?.vouch_count ?? 0,
       trust_ratio: trust?.trust_ratio ?? 0,
@@ -85,12 +85,13 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
           <p className="mt-2 text-sm text-slate-600">Trusted finds and helpful neighbours, close to home.</p>
         </div>
 
-        {/* Repositioned Action Buttons */}
         <div className="flex items-center gap-3 shrink-0">
-          <a href="/new-listing" className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90">
+          <a href="/profile" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-ink transition-transform duration-100 hover:bg-white active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100">
+            My Profile
+          </a>
+          <a href="/new-listing" className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white transition-transform duration-100 hover:opacity-90 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100">
             Post listing
           </a>
-          <LogoutButton />
         </div>
       </div>
 
@@ -101,7 +102,7 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
         <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
           <h2 className="font-heading text-xl font-bold text-ink">Start the conversation</h2>
           <p className="mt-2 leading-6 text-slate-600">There are no listings in your estate yet. Be the first neighbour to share something useful.</p>
-          <a href="/new-listing" className="mt-4 inline-block rounded-lg bg-adire px-4 py-3 font-semibold text-white">
+          <a href="/new-listing" className="mt-4 inline-block rounded-lg bg-adire px-4 py-3 font-semibold text-white transition-transform duration-100 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100">
             Post a listing
           </a>
         </section>

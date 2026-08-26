@@ -6,6 +6,28 @@ import { userProfileSchema } from '@/lib/validation';
 
 export type ProfileActionState = { error?: string; saved?: true };
 
+export async function updateAvatarUrl(avatarUrl: string): Promise<{ error?: string }> {
+  try {
+    const supabase = createAuthServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'Please sign in before uploading a profile photo.' };
+
+    const { error } = await supabase.from('users').update({ avatar_url: avatarUrl }).eq('id', user.id);
+    if (error) {
+      console.error('Could not update profile avatar.', { code: error.code, message: error.message });
+      return { error: 'We could not save your profile photo. Please try again.' };
+    }
+
+    revalidatePath('/profile');
+    revalidatePath('/feed');
+    revalidatePath('/sellers');
+    return {};
+  } catch (err) {
+    console.error('Unexpected error in updateAvatarUrl:', err);
+    return { error: 'Something went wrong while saving your profile photo. Please try again.' };
+  }
+}
+
 export async function updateProfile(_: ProfileActionState, formData: FormData): Promise<ProfileActionState> {
   const parsed = userProfileSchema.safeParse({
     name: formData.get('name'),

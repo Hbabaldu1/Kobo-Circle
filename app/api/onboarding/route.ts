@@ -31,6 +31,22 @@ export async function POST(request: Request) {
       );
     }
 
+    const { data: existingEmailUser, error: existingEmailError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', user.email)
+      .neq('id', user.id)
+      .maybeSingle();
+
+    if (existingEmailError) {
+      console.error('Duplicate email check failed:', existingEmailError.message);
+      return NextResponse.json({ error: 'We could not verify this email address. Please try again.' }, { status: 500 });
+    }
+
+    if (existingEmailUser) {
+      return NextResponse.json({ error: 'This email address is already registered to another account.' }, { status: 409 });
+    }
+
     const { data: street, error: streetError } = await supabase
       .from('streets')
       .select('id, estate_id')
@@ -62,12 +78,18 @@ export async function POST(request: Request) {
     });
 
     if (insertError) {
-      // Postgres unique violation on the primary key means this user
-      // already completed onboarding — treat it as success, not failure,
-      // so a double-submit (double-click, back-button retry) doesn't
-      // strand the user on an error screen.
       if (insertError.code === '23505') {
-        return NextResponse.json({ ok: true });
+        const { data: existingProfile, error: existingProfileError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (!existingProfileError && existingProfile) {
+          return NextResponse.json({ ok: true });
+        }
+
+        return NextResponse.json({ error: 'This email address is already registered to another account.' }, { status: 409 });
       }
       console.error('Onboarding insert failed:', insertError.message);
       return NextResponse.json(

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 // Brand palette for initial fallback avatars
 const AVATAR_COLORS = [
@@ -34,12 +35,18 @@ export function UserAvatar({
   const colorClass = getHashColor(id);
   const initial = name ? name.trim().charAt(0).toUpperCase() : '?';
 
+  useEffect(() => {
+    setImgError(false);
+  }, [avatarUrl]);
+
   if (avatarUrl && !imgError) {
     return (
-      <img
+      <Image
         src={avatarUrl}
         alt={name}
         onError={() => setImgError(true)}
+        width={48}
+        height={48}
         className={`rounded-full object-cover shrink-0 ${className}`}
       />
     );

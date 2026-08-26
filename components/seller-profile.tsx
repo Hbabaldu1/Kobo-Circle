@@ -15,7 +15,9 @@ export function SellerProfile({
   notes,
   isOwner,
   phone,
+  avatarUrl,
   listingTitle,
+  currentUserId,
 }: {
   sellerId: string;
   name: string;
@@ -23,8 +25,10 @@ export function SellerProfile({
   initialVouchCount: number;
   initialTrustRatio: number;
   phone: string | null;
-  listingTitle: string | null;
-  notes: Array<{ id: string; note: string | null; created_at: string }>;
+  avatarUrl?: string;
+  listingTitle?: string;
+  currentUserId: string;
+  notes: Array<{ id: string; note: string | null; created_at: string; voucherId: string; voucherName?: string; voucherAvatarUrl?: string }>;
   isOwner: boolean;
 }) {
   const [vouchCount, setVouchCount] = useState(initialVouchCount);
@@ -48,8 +52,7 @@ export function SellerProfile({
       </a>
       <section className="mt-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
         <div className="flex items-center gap-4">
-          {/* Fixed: Added id={sellerId} */}
-          <TrustRing id={sellerId} name={name} percentage={percentage} animate={justVouched} />
+          <TrustRing id={sellerId} name={name} avatarUrl={avatarUrl} avatarHref={isOwner ? '/profile' : `/sellers/${sellerId}`} percentage={percentage} animate={justVouched} />
           <div>
             <h1 className="font-heading text-2xl font-bold text-ink">{name}</h1>
             <p className="text-sm text-slate-600">{streetName}</p>
@@ -66,7 +69,7 @@ export function SellerProfile({
             href={whatsappLink}
             target="_blank"
             rel="noreferrer"
-            className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-[#25D366] px-4 py-3 font-semibold text-white"
+            className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-[#25D366] px-4 py-3 font-semibold text-white transition-transform duration-100 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
           >
             Message on WhatsApp
           </a>
@@ -84,9 +87,10 @@ export function SellerProfile({
             {notes.map((vouch) => (
               <li
                 key={vouch.id}
-                className="rounded-xl bg-white p-4 text-sm text-ink shadow-sm ring-1 ring-slate-200"
+                className="flex items-start gap-3 rounded-xl bg-white p-4 text-sm text-ink shadow-sm ring-1 ring-slate-200"
               >
-                {vouch.note || 'A neighbour vouched for this seller.'}
+                <a href={vouch.voucherId === currentUserId ? '/profile' : `/sellers/${vouch.voucherId}`} className="cursor-pointer transition-opacity hover:opacity-90"><UserAvatar id={vouch.voucherId} name={vouch.voucherName ?? 'Neighbour'} avatarUrl={vouch.voucherAvatarUrl} className="h-8 w-8 text-sm" /></a>
+                <div><p>{vouch.note || 'A neighbour vouched for this seller.'}</p><p className="mt-1 text-xs text-slate-500">{vouch.voucherName ?? 'Neighbour'}</p></div>
               </li>
             ))}
           </ul>

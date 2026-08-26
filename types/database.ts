@@ -23,9 +23,9 @@ export interface Database {
         }];
       };
       users: {
-        Row: { id: string; name: string; email: string; phone: string | null; street_id: string; estate_id: string; created_at: string };
-        Insert: { id: string; name: string; email: string; phone?: string | null; street_id: string; estate_id: string; created_at?: string };
-        Update: Partial<{ name: string; email: string; phone: string | null; street_id: string; estate_id: string }>;
+        Row: { id: string; name: string; email: string; phone: string | null; avatar_url: string | null; street_id: string; estate_id: string; created_at: string };
+        Insert: { id: string; name: string; email: string; phone?: string | null; avatar_url?: string | null; street_id: string; estate_id: string; created_at?: string };
+        Update: Partial<{ name: string; email: string; phone: string | null; avatar_url: string | null; street_id: string; estate_id: string }>;
         Relationships: [{
           foreignKeyName: 'users_estate_id_fkey';
           columns: ['estate_id'];
