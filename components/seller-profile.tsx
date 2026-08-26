@@ -29,6 +29,7 @@ export function SellerProfile({
   listingTitle?: string;
   notes: Array<{ id: string; note: string | null; created_at: string; voucherId: string; voucherName?: string; voucherAvatarUrl?: string }>;
   isOwner: boolean;
+  currentUserId?: string;
 }) {
   const [vouchCount, setVouchCount] = useState(initialVouchCount);
   const [trustRatio, setTrustRatio] = useState(initialTrustRatio);
@@ -51,7 +52,7 @@ export function SellerProfile({
       </a>
       <section className="mt-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
         <div className="flex items-center gap-4">
-          <TrustRing id={sellerId} name={name} avatarUrl={avatarUrl} percentage={percentage} animate={justVouched} />
+          <TrustRing id={sellerId} name={name} avatarUrl={avatarUrl} percentage={percentage} animate={justVouched} currentUserId={currentUserId} />
           <div>
             <h1 className="font-heading text-2xl font-bold text-ink">{name}</h1>
             <p className="text-sm text-slate-600">{streetName}</p>
