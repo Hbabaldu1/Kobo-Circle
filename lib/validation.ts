@@ -7,8 +7,8 @@ const plainText = (maximum: number) =>
 export const listingSchema = z.object({
   type: z.enum(['sale', 'service', 'request']),
   title: plainText(120),
-  price: z.string().trim().max(80).nullable().optional(),
-  description: plainText(500),
+  price: z.string().trim().max(80).nullable().optional().transform((value) => value || null),
+  description: z.string().trim().max(500).transform((value) => DOMPurify.sanitize(value, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }) || null),
 });
 
 export const vouchSchema = z.object({

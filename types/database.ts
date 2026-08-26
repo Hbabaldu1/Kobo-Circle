@@ -5,14 +5,14 @@ export interface Database {
   public: {
     Tables: {
       estates: {
-        Row: { id: string; name: string; city: string; created_at: string }; 
-        Insert: { id?: string; name: string; city: string; created_at?: string }; 
+        Row: { id: string; name: string; city: string; created_at: string };
+        Insert: { id?: string; name: string; city: string; created_at?: string };
         Update: Partial<{ name: string; city: string }>;
         Relationships: [];
       };
-      streets: { 
-        Row: { id: string; estate_id: string; name: string }; 
-        Insert: { id?: string; estate_id: string; name: string }; 
+      streets: {
+        Row: { id: string; estate_id: string; name: string };
+        Insert: { id?: string; estate_id: string; name: string };
         Update: Partial<{ estate_id: string; name: string }>;
         Relationships: [{
           foreignKeyName: 'streets_estate_id_fkey';
@@ -22,7 +22,7 @@ export interface Database {
           referencedColumns: ['id'];
         }];
       };
-      users: { 
+      users: {
         Row: { id: string; name: string; email: string; phone: string | null; street_id: string; estate_id: string; created_at: string };
         Insert: { id: string; name: string; email: string; phone?: string | null; street_id: string; estate_id: string; created_at?: string };
         Update: Partial<{ name: string; email: string; phone: string | null; street_id: string; estate_id: string }>;
@@ -40,10 +40,10 @@ export interface Database {
           referencedColumns: ['id'];
         }];
       };
-      listings: { 
-        Row: { id: string; user_id: string; estate_id: string; type: ListingType; title: string; price: string | null; description: string; status: ListingStatus; created_at: string }; 
-        Insert: { id?: string; user_id: string; estate_id: string; type: ListingType; title: string; price?: string | null; description: string; status?: ListingStatus; created_at?: string }; 
-        Update: Partial<{ title: string; price: string | null; description: string; status: ListingStatus }>;
+      listings: {
+        Row: { id: string; user_id: string; estate_id: string; type: ListingType; title: string; price: string | null; description: string | null; status: ListingStatus; created_at: string };
+        Insert: { id?: string; user_id: string; estate_id: string; type: ListingType; title: string; price?: string | null; description?: string | null; status?: ListingStatus; created_at?: string };
+        Update: Partial<{ title: string; price: string | null; description: string | null; status: ListingStatus }>;
         Relationships: [{
           foreignKeyName: 'listings_estate_id_fkey';
           columns: ['estate_id'];
@@ -58,10 +58,10 @@ export interface Database {
           referencedColumns: ['id'];
         }];
       };
-      vouches: { 
-        Row: { id: string; voucher_id: string; vouched_for_id: string; note: string; created_at: string }; 
-        Insert: { id?: string; voucher_id: string; vouched_for_id: string; note: string; created_at?: string }; 
-        Update: never; 
+      vouches: {
+        Row: { id: string; voucher_id: string; vouched_for_id: string; note: string | null; created_at: string };
+        Insert: { id?: string; voucher_id: string; vouched_for_id: string; note?: string | null; created_at?: string };
+        Update: never;
         Relationships: [{
           foreignKeyName: 'vouches_voucher_id_fkey';
           columns: ['voucher_id'];
@@ -77,7 +77,14 @@ export interface Database {
         }];
       };
     };
-    Views: Record<string, never>;
+    Views: {
+      seller_trust: {
+        Row: { user_id: string; vouch_count: number; trust_ratio: number };
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+    };
     Functions: { listings_with_trust: { Args: Record<string, never>; Returns: Array<{ id: string; user_id: string; estate_id: string; type: ListingType; title: string; price: string | null; description: string; status: ListingStatus; created_at: string; seller_name: string; street_name: string; vouch_count: number }> }; };
   };
 }
