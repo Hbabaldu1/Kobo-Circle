@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { ListingType } from '@/types/database';
 import { WhatsAppShareButton } from '@/components/whatsapp-share-button';
 
-export type FeedListing = { id: string; user_id: string; type: ListingType; title: string; price: string | null; seller_name: string; street_name: string; vouch_count: number };
+export type FeedListing = { id: string; user_id: string; type: ListingType; title: string; price: string | null; seller_name: string; street_name: string; vouch_count: number; trust_ratio: number };
 const filters: Array<{ label: string; type: ListingType | 'all' }> = [{ label: 'All', type: 'all' }, { label: 'For sale', type: 'sale' }, { label: 'Services', type: 'service' }, { label: 'Requests', type: 'request' }];
 
 export function FeedList({ listings, currentUserId, postedListingId }: { listings: FeedListing[]; currentUserId: string; postedListingId: string | null }) {
@@ -16,7 +16,7 @@ export function FeedList({ listings, currentUserId, postedListingId }: { listing
 }
 
 function ListingCard({ listing, isOwner }: { listing: FeedListing; isOwner: boolean }) {
-  const percentage = Math.min(listing.vouch_count / 12, 1) * 100;
+  const percentage = Number(listing.trust_ratio) * 100;
   const label = listing.type === 'sale' ? 'For sale' : listing.type === 'service' ? 'Service' : 'Request';
   return <article className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200"><p className="text-xs font-bold uppercase tracking-[0.16em] text-brick">{label}</p><h2 className="mt-2 font-heading text-xl font-bold text-ink"><a href={`/listings/${listing.id}`} className="hover:underline">{listing.title}</a></h2><p className="mt-1 font-semibold text-adire">{listing.type === 'request' || !listing.price ? 'Looking to buy' : listing.price}</p><div className="mt-4 flex items-center gap-3 border-t border-[#EFE7D6] pt-4"><TrustRing name={listing.seller_name} percentage={percentage} /><a href={`/sellers/${listing.user_id}`}><p className="font-semibold text-ink">{listing.seller_name}</p><p className="text-sm text-slate-600">{listing.street_name}</p></a><span className="ml-auto font-mono text-sm font-semibold text-adire">{Math.round(percentage)}%</span></div>{isOwner && <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} className="mt-4" />}</article>;
 }
