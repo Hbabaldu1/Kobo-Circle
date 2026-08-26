@@ -44,5 +44,5 @@ export default async function SellerPage({ params }: { params: { id: string } })
     };
   });
 
-  return <SellerProfile sellerId={seller.id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} streetName={street?.name ?? 'Estate neighbour'} initialVouchCount={trust?.vouch_count ?? 0} initialTrustRatio={trust?.trust_ratio ?? 0} phone={seller.phone} listingTitle={latestListing?.title ?? undefined} notes={vouchNotes} currentUserId={user.id} isOwner={seller.id === user.id} />;
+  return <SellerProfile sellerId={seller.id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} streetName={street?.name ?? 'Estate neighbour'} initialVouchCount={trust?.vouch_count ?? 0} initialTrustRatio={trust?.trust_ratio ?? 0} phone={seller.phone} listingTitle={latestListing?.title ?? undefined} notes={vouchNotes} isOwner={seller.id === user.id} />;
 }

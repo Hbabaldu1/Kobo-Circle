@@ -94,7 +94,7 @@ function ListingCard({ listing, isOwner }: { listing: FeedListing; isOwner: bool
         {listing.type === 'request' || !listing.price ? 'Looking to buy' : listing.price}
       </p>
       <div className="mt-4 flex items-center gap-3 border-t border-[#EFE7D6] pt-4">
-        <TrustRing id={listing.user_id} name={listing.seller_name} avatarUrl={listing.avatar_url ?? undefined} avatarHref={isOwner ? '/profile' : `/sellers/${listing.user_id}`} percentage={percentage} />
+        <TrustRing id={listing.user_id} name={listing.seller_name} avatarUrl={listing.avatar_url ?? undefined} percentage={percentage} />
         <a href={`/sellers/${listing.user_id}`}>
           <p className="font-semibold text-ink">{listing.seller_name}</p>
           <p className="text-sm text-slate-600">{listing.street_name}</p>
@@ -110,14 +110,12 @@ export function TrustRing({
   id,
   name,
   avatarUrl,
-  avatarHref,
   percentage,
   animate = false,
 }: {
   id: string;
   name: string;
   avatarUrl?: string;
-  avatarHref?: string;
   percentage: number;
   animate?: boolean;
 }) {
