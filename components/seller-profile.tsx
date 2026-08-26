@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createBrowserClient } from '@supabase/ssr';
 import { TrustRing } from '@/components/feed-list';
 import { UserAvatar } from '@/components/user-avatar';
 import { VouchButton } from '@/components/vouch-button';
@@ -31,9 +33,16 @@ export function SellerProfile({
   isOwner: boolean;
   currentUserId?: string;
 }) {
+  const router = useRouter();
   const [vouchCount, setVouchCount] = useState(initialVouchCount);
   const [trustRatio, setTrustRatio] = useState(initialTrustRatio);
   const [justVouched, setJustVouched] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   const handleVouched = useCallback(() => {
     setVouchCount((count) => count + 1);
@@ -42,14 +51,34 @@ export function SellerProfile({
     window.setTimeout(() => setJustVouched(false), 180);
   }, []);
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  };
+
   const percentage = trustRatio * 100;
   const whatsappLink = listingTitle ? buildWhatsAppListingLink(phone, listingTitle) : null;
 
   return (
     <main className="mx-auto min-h-screen max-w-lg px-5 py-10">
-      <a href="/feed" className="text-sm font-semibold text-adire">
-        ← Back to feed
-      </a>
+      <div className="flex items-center justify-between">
+        <a href="/feed" className="text-sm font-semibold text-adire">
+          ← Back to feed
+        </a>
+        {isOwner && (
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="rounded-lg px-3 py-1.5 text-xs font-semibold text-brick transition-colors hover:bg-brick/10 disabled:opacity-50"
+          >
+            {isLoggingOut ? 'Signing out...' : 'Log out'}
+          </button>
+        )}
+      </div>
+
       <section className="mt-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
         <div className="flex items-center gap-4">
           <TrustRing id={sellerId} name={name} avatarUrl={avatarUrl} percentage={percentage} animate={justVouched} currentUserId={currentUserId} />
@@ -69,7 +98,7 @@ export function SellerProfile({
             href={whatsappLink}
             target="_blank"
             rel="noreferrer"
-            className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-[#25D366] px-4 py-3 font-semibold text-white transition-transform duration-100 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
+            className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-[#25D366] px-4 py-3 font-semibold text-white"
           >
             Message on WhatsApp
           </a>
@@ -80,6 +109,7 @@ export function SellerProfile({
         )}
         {!isOwner && <VouchButton sellerId={sellerId} onVouched={handleVouched} />}
       </section>
+
       <section className="mt-6">
         <h2 className="font-heading text-xl font-bold text-ink">Vouch notes</h2>
         {notes.length ? (
