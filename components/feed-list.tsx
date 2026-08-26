@@ -14,6 +14,7 @@ export type FeedListing = {
   price: string | null;
   photo_url: string | null;
   seller_name: string;
+  avatar_url: string | null;
   street_name: string;
   vouch_count: number;
   trust_ratio: number;
@@ -93,8 +94,7 @@ function ListingCard({ listing, isOwner }: { listing: FeedListing; isOwner: bool
         {listing.type === 'request' || !listing.price ? 'Looking to buy' : listing.price}
       </p>
       <div className="mt-4 flex items-center gap-3 border-t border-[#EFE7D6] pt-4">
-        {/* Fixed: Added id prop */}
-        <TrustRing id={listing.user_id} name={listing.seller_name} percentage={percentage} />
+        <TrustRing id={listing.user_id} name={listing.seller_name} avatarUrl={listing.avatar_url ?? undefined} percentage={percentage} />
         <a href={`/sellers/${listing.user_id}`}>
           <p className="font-semibold text-ink">{listing.seller_name}</p>
           <p className="text-sm text-slate-600">{listing.street_name}</p>
@@ -109,11 +109,13 @@ function ListingCard({ listing, isOwner }: { listing: FeedListing; isOwner: bool
 export function TrustRing({
   id,
   name,
+  avatarUrl,
   percentage,
   animate = false,
 }: {
   id: string;
   name: string;
+  avatarUrl?: string;
   percentage: number;
   animate?: boolean;
 }) {
@@ -126,7 +128,7 @@ export function TrustRing({
       style={{ background: `conic-gradient(#D9A441 ${percentage * 3.6}deg, #EFE7D6 0deg)` }}
     >
       <div className="grid h-9 w-9 place-items-center rounded-full bg-paper">
-        <UserAvatar id={id} name={name} className="h-8 w-8 text-sm" />
+        <UserAvatar id={id} name={name} avatarUrl={avatarUrl} className="h-8 w-8 text-sm" />
       </div>
     </div>
   );

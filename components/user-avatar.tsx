@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Brand palette for initial fallback avatars
 const AVATAR_COLORS = [
@@ -33,6 +33,10 @@ export function UserAvatar({
   const [imgError, setImgError] = useState(false);
   const colorClass = getHashColor(id);
   const initial = name ? name.trim().charAt(0).toUpperCase() : '?';
+
+  useEffect(() => {
+    setImgError(false);
+  }, [avatarUrl]);
 
   if (avatarUrl && !imgError) {
     return (
