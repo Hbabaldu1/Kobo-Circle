@@ -132,6 +132,11 @@ export function TrustRing({
       </div>
     </div>
   );
-
-  return avatarHref ? <a href={avatarHref} className="cursor-pointer transition-opacity hover:opacity-90">{ring}</a> : ring;
+const avatarHref = userId === currentUserId ? '/profile' : `/sellers/${userId}`;
+  return avatarHref ? (
+  <Link href={avatarHref} className="cursor-pointer transition-opacity hover:opacity-90">
+    {ring}
+  </Link>
+) : (
+  ring);
 }
