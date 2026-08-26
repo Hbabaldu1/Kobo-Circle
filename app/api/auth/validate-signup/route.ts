@@ -13,6 +13,12 @@ const signupSchema = z.object({
 const MAX_SIGNUP_ATTEMPTS = 3;
 const WINDOW_MINUTES = 60;
 
+// Initialize Supabase admin client with service role key (or fallback to your admin helper import if available)
+const adminClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 export async function POST(request: Request) {
   let body: unknown;
   try {
