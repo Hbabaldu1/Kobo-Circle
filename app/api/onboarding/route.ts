@@ -15,8 +15,7 @@ export async function POST(request: Request) {
     .select('id, estate_id')
     .eq('id', parsed.data.streetId)
     .maybeSingle();
-  const { data: expectedEstate } = await supabase.from('estates').select('id').limit(1).maybeSingle();
-  if (!street || !expectedEstate || street.estate_id !== expectedEstate.id) {
+  if (!street) {
     return NextResponse.json({ error: 'That street is unavailable. Please choose another one.' }, { status: 400 });
   }
 

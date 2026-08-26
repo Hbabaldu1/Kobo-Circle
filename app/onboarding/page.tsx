@@ -7,10 +7,7 @@ export default async function OnboardingPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user || !user.email_confirmed_at) redirect('/login');
 
-  // Kobo Circle is intentionally single-estate at launch; streets still come from the database.
-  const { data: estate } = await supabase.from('estates').select('id').limit(1).maybeSingle();
-  const { data: streets } = estate
-    ? await supabase.from('streets').select('id, name').eq('estate_id', estate.id).order('name')
-    : { data: [] as Array<{ id: string; name: string }> };
+  // Streets are readable during onboarding before a users row exists; estates are not.
+  const { data: streets } = await supabase.from('streets').select('id, name').order('name');
   return <OnboardingForm streets={streets ?? []} />;
 }
