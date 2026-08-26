@@ -19,11 +19,14 @@ export const userProfileSchema = z.object({
   phone: z.string().max(20).optional(),
 });
 
+export const listingStatusSchema = z.enum(['active', 'sold', 'closed']);
+
 export const listingSchema = z.object({
   type: z.enum(['sale', 'service', 'request']),
   title: z.string().min(1).max(120).transform(cleanText),
   price: z.string().max(50).optional(),
   description: z.string().max(500).optional().transform((v) => (v ? cleanText(v) : v)),
+  photo_url: z.string().url().optional(),
 });
 
 export const vouchNoteSchema = z.object({

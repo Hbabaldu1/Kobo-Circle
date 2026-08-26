@@ -65,7 +65,7 @@ export function OnboardingForm({ streets }: { streets: Array<{ id: string; name:
         <p className="font-heading text-sm font-bold uppercase tracking-[0.18em] text-adire">Kobo Circle</p>
         <h1 className="mt-3 font-heading text-3xl font-bold text-ink">Join your estate</h1>
         <p className="mt-2 text-sm leading-6 text-slate-600">
-          Tell neighbours how to find you. Your phone number is optional and can be used for sharing links later.
+          Tell neighbours how to find you. Add your phone so buyers can reach you on WhatsApp, or skip it for now.
         </p>
         <form onSubmit={submit} className="mt-6 space-y-4">
           <div>
@@ -111,7 +111,7 @@ export function OnboardingForm({ streets }: { streets: Array<{ id: string; name:
           </div>
           <button
             disabled={loading || streets.length === 0}
-            className="w-full rounded-lg bg-adire px-4 py-3 font-semibold text-white disabled:opacity-60"
+            className="w-full rounded-lg bg-adire px-4 py-3 font-semibold text-white transition-transform duration-100 active:scale-95 disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100"
           >
             {loading ? 'Saving…' : 'Continue to Kobo Circle'}
           </button>
