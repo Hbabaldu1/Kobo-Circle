@@ -1,12 +1,24 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createBrowserClient } from '@supabase/ssr';
 import { TrustRing } from '@/components/feed-list';
 import { UserAvatar } from '@/components/user-avatar';
 import { VouchButton } from '@/components/vouch-button';
 import { buildWhatsAppListingLink } from '@/lib/whatsapp';
+import { logout } from '@/app/logout/actions';
+
+function LogoutButton() {
+  return (
+    <form action={logout}>
+      <button
+        type="submit"
+        className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-ink transition-transform duration-100 hover:bg-white active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
+      >
+        Log out
+      </button>
+    </form>
+  );
+}
 
 export function SellerProfile({
   sellerId,
@@ -33,16 +45,9 @@ export function SellerProfile({
   isOwner: boolean;
   currentUserId?: string;
 }) {
-  const router = useRouter();
   const [vouchCount, setVouchCount] = useState(initialVouchCount);
   const [trustRatio, setTrustRatio] = useState(initialTrustRatio);
   const [justVouched, setJustVouched] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
 
   const handleVouched = useCallback(() => {
     setVouchCount((count) => count + 1);
@@ -50,13 +55,6 @@ export function SellerProfile({
     setJustVouched(true);
     window.setTimeout(() => setJustVouched(false), 180);
   }, []);
-
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
-  };
 
   const percentage = trustRatio * 100;
   const whatsappLink = listingTitle ? buildWhatsAppListingLink(phone, listingTitle) : null;
@@ -67,16 +65,7 @@ export function SellerProfile({
         <a href="/feed" className="text-sm font-semibold text-adire">
           ← Back to feed
         </a>
-        {isOwner && (
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="rounded-lg px-3 py-1.5 text-xs font-semibold text-brick transition-colors hover:bg-brick/10 disabled:opacity-50"
-          >
-            {isLoggingOut ? 'Signing out...' : 'Log out'}
-          </button>
-        )}
+        {isOwner && <LogoutButton />}
       </div>
 
       <section className="mt-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
