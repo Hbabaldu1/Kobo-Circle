@@ -8,19 +8,17 @@ import { TopNav } from '@/components/top-nav';
 
 const publicRoutes = ['/login', '/signup', '/onboarding', '/auth'];
 
-export function AppNavWrapper({ children, initialAuthenticated }: { children: React.ReactNode; initialAuthenticated: boolean }) {
+export function AppNavWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const supabase = useMemo(() => createClient(), []);
-  const [authenticated, setAuthenticated] = useState(initialAuthenticated);
+  const [authenticated, setAuthenticated] = useState(false);
   const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   useEffect(() => {
     if (isPublicRoute) { setAuthenticated(false); return; }
-    setAuthenticated(initialAuthenticated);
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setAuthenticated(Boolean(session?.user)));
-    return () => subscription.unsubscribe();
-  }, [initialAuthenticated, isPublicRoute, supabase]);
+    void supabase.auth.getUser().then(({ data }) => setAuthenticated(Boolean(data.user)));
+  }, [isPublicRoute, supabase]);
 
   if (isPublicRoute || !authenticated) return <>{children}</>;
-  return <><div className="hidden md:block"><TopNav /></div><div className="pb-20 md:pb-0">{children}</div><MobileBottomNav /></>;
+  return <><TopNav /><div className="pb-20 md:pb-0">{children}</div><MobileBottomNav /></>;
 }

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
-import { AppNavWrapper } from '@/components/app-nav-wrapper';
-import { createAuthServerClient } from '@/lib/supabase/auth-server';
+import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -36,7 +35,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const { data: { user } } = await supabase.auth.getUser();
   return (
     <html lang="en">
-<body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans`}><AppNavWrapper initialAuthenticated={Boolean(user)}>{children}</AppNavWrapper></body>
+<body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} pb-16 font-sans md:pb-0`}>{children}<MobileBottomNav /></body>
     </html>
   );
 }
