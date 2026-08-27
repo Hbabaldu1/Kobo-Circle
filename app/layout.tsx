@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
-import { createServerClient } from '@/lib/supabase/server'; // or 'createClient' depending on your export name
+import { createAuthServerClient } from '@/lib/supabase/server';
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import { TopNav } from '@/components/top-nav';
 import './globals.css';
@@ -34,7 +34,7 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const supabase = createServerClient();
+  const supabase = createAuthServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
