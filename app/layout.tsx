@@ -30,7 +30,9 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const supabase = createAuthServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
   return (
     <html lang="en">
 <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} pb-16 font-sans md:pb-0`}>{children}<MobileBottomNav /></body>
