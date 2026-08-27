@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import { createAuthServerClient } from '@/lib/supabase/server'; // Adjusted import to resolve createAuthServerClient
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
+import { TopNav } from '@/components/top-nav';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk', display: 'swap' });
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains-mono', display: 'swap' });
+
 export const metadata: Metadata = {
   title: 'Kobo Circle',
   description: 'A hyperlocal marketplace for your estate.',
@@ -33,9 +36,14 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const supabase = createAuthServerClient();
   const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <html lang="en">
-<body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} pb-16 font-sans md:pb-0`}>{children}<MobileBottomNav /></body>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans ${user ? 'pb-16 md:pb-0' : 'pb-0'}`}>
+        {user && <TopNav user={user} />}
+        <main>{children}</main>
+        {user && <MobileBottomNav />}
+      </body>
     </html>
   );
 }
