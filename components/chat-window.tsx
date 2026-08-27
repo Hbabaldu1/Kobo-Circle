@@ -177,31 +177,38 @@ export function ChatWindow({ conversationId, currentUserId, initialMessages, cou
     };
   }, [conversationId, supabase]);
 
-  async function sendMessage(event: React.FormEvent) {
-    event.preventDefault();
-    if (sending) return;
-
-    // Send text if typed, otherwise send thumbs up
-    const textToSend = content.trim() || '👍';
+  async function handleSend(textToSend?: string) {
+    const text = textToSend ?? content.trim();
+    if (!text || sending) return;
     setSending(true);
 
     const { data, error: insertError } = await supabase
       .from('messages')
-      .insert({ conversation_id: conversationId, sender_id: currentUserId, content: textToSend })
+      .insert({ conversation_id: conversationId, sender_id: currentUserId, content: text })
       .select()
       .single();
 
     if (!insertError && data) {
       setMessages((current) => (current.some((message) => message.id === data.id) ? current : [...current, data]));
-      setContent('');
+      if (!textToSend) setContent('');
     }
     setSending(false);
   }
 
-  const hasContent = content.trim().length > 0;
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (content.trim()) {
+      void handleSend();
+    } else {
+      void handleSend('👍');
+    }
+  }
+
+  const hasText = content.trim().length > 0;
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-120px)] max-w-2xl flex-col bg-slate-50 text-slate-900 border-x border-slate-200">
+    <div className="mx-auto flex h-[calc(100vh-64px)] max-w-2xl flex-col overflow-hidden border-x border-slate-200 bg-slate-50 text-slate-900">
+      {/* Scrollable Message List Container */}
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-6" aria-live="polite">
         <section className="mb-8 flex flex-col items-center text-center">
           <UserAvatar id={counterparty.id} name={counterparty.name} avatarUrl={counterparty.avatarUrl} className="h-24 w-24 text-2xl" />
@@ -209,7 +216,7 @@ export function ChatWindow({ conversationId, currentUserId, initialMessages, cou
           <p className="mt-1 text-sm text-slate-500">You&apos;re connected on Kobo Circle</p>
           <Link
             href={listing ? `/listings/${listing.id}` : `/sellers/${counterparty.id}`}
-            className="mt-4 rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-300 transition-colors"
+            className="mt-4 rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-300"
           >
             {listing ? 'View listing' : 'View profile'}
           </Link>
@@ -225,7 +232,7 @@ export function ChatWindow({ conversationId, currentUserId, initialMessages, cou
               {showDate && <p className="my-6 text-center text-xs font-medium text-slate-400">{dateLabel(message.created_at)}</p>}
               <div className={`flex items-end gap-2 ${outgoing ? 'justify-end' : 'justify-start'}`}>
                 {!outgoing && <UserAvatar id={counterparty.id} name={counterparty.name} avatarUrl={counterparty.avatarUrl} className="h-7 w-7" />}
-                <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${outgoing ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-xs'}`}>
+                <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${outgoing ? 'rounded-br-none bg-blue-600 text-white' : 'rounded-bl-none border border-slate-200 bg-white text-slate-800 shadow-xs'}`}>
                   <p className="whitespace-pre-wrap break-words">{message.content}</p>
                 </div>
               </div>
@@ -235,29 +242,30 @@ export function ChatWindow({ conversationId, currentUserId, initialMessages, cou
         <div ref={endRef} />
       </div>
 
-      <form onSubmit={sendMessage} className="sticky bottom-0 border-t border-slate-200 bg-white px-3 py-2.5">
+      {/* Input Form Footer */}
+      <form onSubmit={handleSubmit} className="shrink-0 border-t border-slate-200 bg-white px-3 py-2.5">
         <div className="flex items-center gap-2">
           <input
             value={content}
             onChange={(event) => setContent(event.target.value)}
             placeholder="Message"
-            className="flex-1 rounded-full border border-slate-300 bg-slate-100 px-4 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500"
+            className="flex-1 rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500"
           />
           <button
             type="submit"
             disabled={sending}
-            aria-label={hasContent ? 'Send message' : 'Send thumbs up'}
-            className="p-2 text-blue-600 hover:text-blue-700 transition-colors"
+            aria-label={hasText ? 'Send message' : 'Send like'}
+            className="p-1.5 text-blue-600 transition-colors hover:text-blue-700 disabled:opacity-40"
           >
-            {hasContent ? (
+            {hasText ? (
               /* Send Arrow Icon */
-              <svg className="h-6 w-6 transform rotate-45" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3 21l18-9L3 3l3 9zm0 0h75" />
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
               </svg>
             ) : (
-              /* Thumbs Up (Like) Icon */
+              /* Thumb Up Icon */
               <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M7.498 12.394a.5.5 0 01.354.854l-4.5 4.5a.5.5 0 01-.708 0l-2-2a.5.5 0 11.708-.708L3 16.793l4.146-4.147a.5.5 0 01.352-.252zM12 2a1 1 0 01.8.4l2.5 3.333H20a2 2 0 012 2v10a2 2 0 01-2 2h-9.28a2 2 0 01-1.6-.8l-4.12-5.493A2 2 0 014.6 12.16l1.9-4.75A2 2 0 018.36 6H10V3a1 1 0 011-1z" />
+                <path d="M7.466 22H3.05A1.05 1.05 0 012 20.95V10.45C2 9.87 2.47 9.4 3.05 9.4h4.416V22zm2.1-12.6V20.95c0 .58.47 1.05 1.05 1.05h6.394c.95 0 1.76-.67 1.93-1.6l1.64-9.02a2.003 2.003 0 00-1.97-2.36h-4.32a.5.5 0 01-.48-.64l1.1-4.4a1.85 1.85 0 00-1.78-2.38 1.44 1.44 0 00-1.12.52L9.566 9.4z" />
               </svg>
             )}
           </button>
