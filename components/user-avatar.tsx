@@ -6,6 +6,7 @@ interface UserAvatarProps {
   id: string;
   name: string;
   avatarUrl?: string | null;
+  isOnline?: boolean;
   className?: string;
   isOnline?: boolean;
 }
