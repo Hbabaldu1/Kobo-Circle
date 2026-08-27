@@ -1,63 +1,7 @@
-// 'use client';
-
-// import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-// import { createClient } from '@/lib/supabase/client';
-// import type { Database } from '@/types/database';
-
-// type Message = Database['public']['Tables']['messages']['Row'];
-
-// export function ChatWindow({ conversationId, currentUserId, initialMessages }: { conversationId: string; currentUserId: string; initialMessages: Message[] }) {
-//   const [messages, setMessages] = useState(initialMessages);
-//   const [content, setContent] = useState('');
-//   const [error, setError] = useState('');
-//   const [sending, setSending] = useState(false);
-//   const endRef = useRef<HTMLDivElement>(null);
-//   const supabase = useMemo(() => createClient(), []);
-
-//   useEffect(() => { setMessages(initialMessages); }, [conversationId, initialMessages]);
-//   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
-//   useEffect(() => {
-//     const channel = supabase.channel(`messages:${conversationId}`)
-//       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, (payload) => {
-//         const incoming = payload.new as Message;
-//         setMessages((current) => current.some((message) => message.id === incoming.id) ? current : [...current, incoming]);
-//       })
-//       .subscribe();
-//     return () => { void supabase.removeChannel(channel); };
-//   }, [conversationId, supabase]);
-
-//   async function sendMessage(event: FormEvent<HTMLFormElement>) {
-//     event.preventDefault();
-//     const trimmed = content.trim();
-//     if (!trimmed || sending) return;
-//     setSending(true); setError('');
-//     const { data, error: insertError } = await supabase.from('messages').insert({ conversation_id: conversationId, sender_id: currentUserId, content: trimmed }).select().single();
-//     if (insertError) setError('Your message could not be sent. Please try again.');
-//     else if (data) setMessages((current) => current.some((message) => message.id === data.id) ? current : [...current, data]);
-//     if (!insertError) setContent('');
-//     setSending(false);
-//   }
-
-//   return <div className="flex min-h-[360px] flex-col">
-//     <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4" aria-live="polite">
-//       {messages.length === 0 && <p className="py-12 text-center text-sm text-slate-500">Send a message to start this conversation.</p>}
-//       {messages.map((message) => <div key={message.id} className={`flex ${message.sender_id === currentUserId ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-6 ${message.sender_id === currentUserId ? 'rounded-br-sm bg-adire text-white' : 'rounded-bl-sm bg-[#EFE7D6] text-ink'}`}><p className="whitespace-pre-wrap break-words">{message.content}</p><p className={`mt-1 text-right text-[10px] ${message.sender_id === currentUserId ? 'text-white/70' : 'text-slate-500'}`}>{new Date(message.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</p></div></div>)}
-//       <div ref={endRef} />
-//     </div>
-//     <form onSubmit={sendMessage} className="border-t border-slate-200 p-3">
-//       {error && <p role="alert" className="mb-2 text-sm text-brick">{error}</p>}
-//       <div className="flex gap-2"><textarea value={content} onChange={(event) => setContent(event.target.value)} maxLength={1000} rows={2} placeholder="Write a message…" className="min-h-11 flex-1 resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm" /><button type="submit" disabled={sending || !content.trim()} className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{sending ? 'Sending…' : 'Send'}</button></div>
-//     </form>
-//   </div>;
-// }
-
-
-
 'use client';
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { Image as ImageIcon, Mic, ThumbsUp } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { UserAvatar } from '@/components/user-avatar';
 import type { Database } from '@/types/database';
@@ -157,10 +101,14 @@ export function ChatWindow({ conversationId, currentUserId, initialMessages, cou
       <form onSubmit={sendMessage} className="sticky bottom-0 border-t border-slate-800 bg-[#121212] px-3 py-2.5">
         <div className="flex items-center gap-2">
           <button type="button" aria-label="Attach gallery media" className="p-1 text-blue-500 hover:text-blue-400">
-            <ImageIcon className="h-5 w-5" />
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            </svg>
           </button>
           <button type="button" aria-label="Audio note" className="p-1 text-blue-500 hover:text-blue-400">
-            <Mic className="h-5 w-5" />
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 003-3V4.5a3 3 0 10-6 0v8.25a3 3 0 003 3z" />
+            </svg>
           </button>
           <input
             value={content}
@@ -169,7 +117,9 @@ export function ChatWindow({ conversationId, currentUserId, initialMessages, cou
             className="flex-1 rounded-full bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-400 outline-none focus:ring-1 focus:ring-blue-500"
           />
           <button type="submit" disabled={sending || !content.trim()} className="p-1 text-blue-500 disabled:opacity-40">
-            <ThumbsUp className="h-5 w-5" />
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.888 1.041-2.183 1.679-3.596 1.679H11.25a4.5 4.5 0 01-4.5-4.5V10.5z" />
+            </svg>
           </button>
         </div>
       </form>
