@@ -34,12 +34,16 @@
 // }
 
 
+
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ChatHeader } from '@/components/chat-header';
 import { ChatWindow } from '@/components/chat-window';
 import { UserAvatar } from '@/components/user-avatar';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
+import type { Database } from '@/types/database';
+
+type Message = Database['public']['Tables']['messages']['Row'];
 
 export default async function MessagesPage({ searchParams }: { searchParams: { conversationId?: string } }) {
   const supabase = createAuthServerClient();
@@ -69,11 +73,11 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
 
   const personById = new Map((persons ?? []).map((person) => [person.id, person]));
   const listingById = new Map((listings ?? []).map((listing) => [listing.id, listing]));
-  const latestByConversation = new Map<string, typeof latestMessages extends (infer U)[] ? U : never>();
+  const latestByConversation = new Map<string, Message>();
 
   (latestMessages ?? []).forEach((message) => {
     if (!latestByConversation.has(message.conversation_id)) {
-      latestByConversation.set(message.conversation_id, message);
+      latestByConversation.set(message.conversation_id, message as Message);
     }
   });
 
@@ -81,7 +85,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
   const counterparty = selectedOtherId ? personById.get(selectedOtherId) : undefined;
   const selectedListing = selected?.listing_id ? listingById.get(selected.listing_id) : undefined;
 
-  // Level 2: Active Chat Thread View
+  // Active Chat View
   if (selected && counterparty) {
     return (
       <main className="min-h-[100dvh] bg-[#121212] text-white">
@@ -89,7 +93,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
         <ChatWindow
           conversationId={selected.id}
           currentUserId={user.id}
-          initialMessages={selectedMessages ?? []}
+          initialMessages={(selectedMessages ?? []) as Message[]}
           counterparty={{ id: counterparty.id, name: counterparty.name, avatarUrl: counterparty.avatar_url }}
           listing={selectedListing ? { id: selectedListing.id, title: selectedListing.title } : undefined}
         />
@@ -97,10 +101,9 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
     );
   }
 
-  // Level 1: Messenger Inbox List View
+  // Inbox View
   return (
     <main className="mx-auto min-h-screen max-w-2xl bg-[#121212] px-4 py-3 text-white">
-      {/* Header Bar */}
       <div className="flex items-center justify-between py-2">
         <div className="flex items-center gap-3">
           <Link href="/feed" className="text-xl">←</Link>
@@ -112,7 +115,6 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
         </div>
       </div>
 
-      {/* Active Stories / Notes Horizontal Bar */}
       <div className="flex gap-4 overflow-x-auto py-4 scrollbar-none">
         <div className="flex flex-col items-center gap-1.5 min-w-[64px]">
           <div className="relative h-14 w-14 rounded-full bg-slate-800">
@@ -135,7 +137,6 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
         })}
       </div>
 
-      {/* Messages List */}
       <div className="mt-2 space-y-1">
         {rows.length === 0 ? (
           <p className="py-10 text-center text-sm text-slate-400">No conversations yet.</p>
