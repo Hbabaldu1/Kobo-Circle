@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import { AppNavWrapper } from '@/components/app-nav-wrapper';
+import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -29,10 +31,12 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const supabase = createAuthServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
   return (
     <html lang="en">
-<body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans`}>{children}</body>
+<body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans ${user ? 'pb-16 md:pb-0' : 'pb-0'}`}><AppNavWrapper initialAuthenticated={Boolean(user)}>{children}</AppNavWrapper></body>
     </html>
   );
 }
