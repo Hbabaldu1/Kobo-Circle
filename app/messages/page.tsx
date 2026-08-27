@@ -88,7 +88,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
   // Active Chat View
   if (selected && counterparty) {
     return (
-      <main className="min-h-[100dvh] bg-white p-5 text-left shadow-sm text-white">
+      <main className="min-h-[100dvh] bg-white shadow-sm text-white">
         <ChatHeader name={counterparty.name} avatarUrl={counterparty.avatar_url} profileId={counterparty.id} listingId={selectedListing?.id} />
         <ChatWindow
           conversationId={selected.id}
@@ -103,7 +103,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
 
   // Inbox View
   return (
-    <main className="mx-auto min-h-screen max-w-2xl bg-[#4A2E2B] px-4 py-3 text-white">
+    <main className="mx-auto min-h-screen max-w-2xl bg-white px-4 py-3 text-white">
       <div className="flex items-center justify-between py-2">
         <div className="flex items-center gap-3">
           <Link href="/feed" className="text-xl">←</Link>
