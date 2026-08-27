@@ -77,24 +77,6 @@ export default async function FeedPage({ searchParams }: { searchParams: { poste
 
   return (
     <main className="mx-auto min-h-screen max-w-2xl px-5 py-10 lg:max-w-6xl">
-      {/* Header section with clean button layout */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="font-heading text-sm font-bold uppercase tracking-[0.18em] text-adire">Kobo Circle</p>
-          <h1 className="mt-2 font-heading text-3xl font-bold text-ink">Your estate feed</h1>
-          <p className="mt-2 text-sm text-slate-600">Trusted finds and helpful neighbours, close to home.</p>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0">
-          <a href="/profile" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-ink transition hover:bg-white">
-            My Profile
-          </a>
-          <a href="/new-listing" className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90">
-            Post listing
-          </a>
-        </div>
-      </div>
-
       {/* Feed Content */}
       {listings.length ? (
         <FeedList listings={listings} currentUserId={user.id} postedListingId={searchParams.posted ?? null} />
