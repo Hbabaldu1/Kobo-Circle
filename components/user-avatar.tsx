@@ -8,7 +8,6 @@ interface UserAvatarProps {
   avatarUrl?: string | null;
   isOnline?: boolean;
   className?: string;
-  isOnline?: boolean;
 }
 
 export function UserAvatar({ id, name, avatarUrl, className = 'h-10 w-10', isOnline }: UserAvatarProps) {
