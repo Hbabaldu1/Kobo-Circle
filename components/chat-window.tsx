@@ -57,6 +57,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { Image as ImageIcon, Mic, ThumbsUp } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { UserAvatar } from '@/components/user-avatar';
 import type { Database } from '@/types/database';
@@ -121,11 +122,10 @@ export function ChatWindow({ conversationId, currentUserId, initialMessages, cou
   return (
     <div className="flex min-h-[calc(100dvh-57px)] flex-col bg-[#121212] text-white">
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-6" aria-live="polite">
-        {/* Messenger Hero Section */}
         <section className="mb-8 flex flex-col items-center text-center">
           <UserAvatar id={counterparty.id} name={counterparty.name} avatarUrl={counterparty.avatarUrl} className="h-28 w-28 text-3xl" />
           <h2 className="mt-3 font-heading text-2xl font-bold">{counterparty.name}</h2>
-          <p className="mt-1 text-sm text-slate-400">You're connected on Kobo Circle</p>
+          <p className="mt-1 text-sm text-slate-400">You&apos;re connected on Kobo Circle</p>
           <Link
             href={listing ? `/listings/${listing.id}` : `/sellers/${counterparty.id}`}
             className="mt-4 rounded-lg bg-slate-800 px-5 py-2 text-sm font-semibold text-white hover:bg-slate-700 transition-colors"
@@ -154,19 +154,22 @@ export function ChatWindow({ conversationId, currentUserId, initialMessages, cou
         <div ref={endRef} />
       </div>
 
-      {/* Messenger Input Bar */}
       <form onSubmit={sendMessage} className="sticky bottom-0 border-t border-slate-800 bg-[#121212] px-3 py-2.5">
         <div className="flex items-center gap-2">
-          <button type="button" aria-label="Attach gallery media" className="text-xl text-blue-500 hover:text-blue-400 p-1">🖼</button>
-          <button type="button" aria-label="Audio note" className="text-xl text-blue-500 hover:text-blue-400 p-1">🎙</button>
+          <button type="button" aria-label="Attach gallery media" className="p-1 text-blue-500 hover:text-blue-400">
+            <ImageIcon className="h-5 w-5" />
+          </button>
+          <button type="button" aria-label="Audio note" className="p-1 text-blue-500 hover:text-blue-400">
+            <Mic className="h-5 w-5" />
+          </button>
           <input
             value={content}
             onChange={(event) => setContent(event.target.value)}
             placeholder="Message"
             className="flex-1 rounded-full bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-400 outline-none focus:ring-1 focus:ring-blue-500"
           />
-          <button type="submit" disabled={sending || !content.trim()} className="text-xl text-blue-500 disabled:opacity-40 p-1">
-            👍
+          <button type="submit" disabled={sending || !content.trim()} className="p-1 text-blue-500 disabled:opacity-40">
+            <ThumbsUp className="h-5 w-5" />
           </button>
         </div>
       </form>
