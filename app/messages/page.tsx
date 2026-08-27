@@ -88,7 +88,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
   // Active Chat View
   if (selected && counterparty) {
     return (
-      <main className="min-h-[100dvh] bg-[#121212] text-white">
+      <main className="min-h-[100dvh] bg-white p-5 text-left shadow-sm text-white">
         <ChatHeader name={counterparty.name} avatarUrl={counterparty.avatar_url} profileId={counterparty.id} listingId={selectedListing?.id} />
         <ChatWindow
           conversationId={selected.id}
