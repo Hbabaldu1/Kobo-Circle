@@ -10,14 +10,13 @@ export async function getOrCreateConversation(listingId: string, sellerId: strin
   if (user.id === sellerId) throw new Error('You cannot message yourself.');
 
   const [participantOne, participantTwo] = [user.id, sellerId].sort();
-  const findConversation = () => supabase
+  const { data: existing, error: lookupError } = await supabase
     .from('conversations')
     .select('id')
     .eq('participant_one', participantOne)
     .eq('participant_two', participantTwo)
     .eq('listing_id', listingId)
     .maybeSingle();
-  const { data: existing, error: lookupError } = await findConversation();
 
   if (lookupError) throw new Error('Could not open this conversation.');
   if (existing) redirect(`/messages?conversationId=${existing.id}`);
@@ -28,10 +27,6 @@ export async function getOrCreateConversation(listingId: string, sellerId: strin
     .select('id')
     .single();
 
-  if (insertError?.code === '23505') {
-    const { data: racedConversation, error: retryError } = await findConversation();
-    if (!retryError && racedConversation) redirect(`/messages?conversationId=${racedConversation.id}`);
-  }
   if (insertError || !conversation) throw new Error('Could not start this conversation.');
   redirect(`/messages?conversationId=${conversation.id}`);
 }
