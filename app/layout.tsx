@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -32,7 +33,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-<body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans`}>{children}</body>
+<body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} pb-16 font-sans md:pb-0`}>{children}<MobileBottomNav /></body>
     </html>
   );
 }

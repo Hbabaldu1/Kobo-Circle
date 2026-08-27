@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { ListingPhoto } from '@/components/listing-photo';
 import { TrustRing } from '@/components/feed-list';
 import { WhatsAppShareButton } from '@/components/whatsapp-share-button';
+import { MessageSellerButton } from '@/components/message-seller-button';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { buildWhatsAppListingLink } from '@/lib/whatsapp';
 
@@ -43,6 +44,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
             <a href={whatsappLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-lg bg-[#25D366] px-4 py-3 font-semibold text-white transition-transform duration-100 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100">Message on WhatsApp</a>
           </div>
         )}
+        {listing.user_id !== user.id && <MessageSellerButton listingId={listing.id} sellerId={listing.user_id} />}
         {listing.user_id === user.id && <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} className="mt-5" />}
       </article>
     </main>
