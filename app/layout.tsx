@@ -7,6 +7,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk', display: 'swap' });
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains-mono', display: 'swap' });
+
 export const metadata: Metadata = {
   title: 'Kobo Circle',
   description: 'A hyperlocal marketplace for your estate.',
@@ -34,9 +35,12 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const supabase = createAuthServerClient();
   const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <html lang="en">
-<body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans ${user ? 'pb-16 md:pb-0' : 'pb-0'}`}><AppNavWrapper initialAuthenticated={Boolean(user)}>{children}</AppNavWrapper></body>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans ${user ? 'pb-16 md:pb-0' : 'pb-0'}`}>
+        <AppNavWrapper initialAuthenticated={Boolean(user)}>{children}</AppNavWrapper>
+      </body>
     </html>
   );
 }
