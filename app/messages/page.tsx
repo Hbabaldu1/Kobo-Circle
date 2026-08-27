@@ -79,8 +79,8 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
           const person = personById.get(otherId);
           return (
             <Link key={conversation.id} href={`/messages?conversationId=${conversation.id}`} className="flex flex-col items-center gap-1.5 min-w-[64px]">
-              <div className="relative">
-                <UserAvatar id={otherId} name={person?.name ?? 'User'} avatarUrl={person?.avatar_url} className="h-14 w-14 ring-2 ring-blue-500" />
+              <div className="relative rounded-full ring-2 ring-blue-500 p-0.5">
+                <UserAvatar id={otherId} name={person?.name ?? 'User'} avatarUrl={person?.avatar_url} className="h-14 w-14" />
               </div>
               <span className="text-xs text-slate-700 font-medium truncate w-16 text-center">{person?.name?.split(' ')[0] ?? 'User'}</span>
             </Link>
