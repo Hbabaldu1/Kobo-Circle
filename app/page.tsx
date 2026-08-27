@@ -14,7 +14,7 @@ export default function HomePage() {
             Log in
           </Link>
           <Link href="/signup" className="rounded-lg bg-adire px-4 py-2 text-sm font-semibold text-white transition-transform duration-100 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none motion-reduce:active:scale-100">
-            Join your estate
+            Join your state
           </Link>
         </div>
       </nav>
@@ -24,12 +24,12 @@ export default function HomePage() {
           Trade with people your street already trusts.
         </h1>
         <p className="mx-auto mt-5 max-w-lg text-base leading-7 text-slate-600">
-          One estate, one feed. Every neighbour carries a trust ring built by
+          One state, one feed. Every neighbour carries a trust ring built by
           real vouches from people nearby — not stars from strangers.
         </p>
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link href="/signup" className="w-full rounded-lg bg-adire px-6 py-3.5 text-center font-semibold text-white transition-transform duration-100 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none motion-reduce:active:scale-100 sm:w-auto">
-            Join your estate
+            Join your state
           </Link>
           <Link href="/login" className="w-full rounded-lg border border-slate-300 px-6 py-3.5 text-center font-semibold text-ink transition-transform duration-100 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none motion-reduce:active:scale-100 sm:w-auto">
             I already have an account
@@ -39,14 +39,14 @@ export default function HomePage() {
 
       <section className="animate-card-enter mx-auto max-w-4xl px-5 pb-24">
         <div className="grid gap-5 sm:grid-cols-3">
-          <FeatureCard title="Hyperlocal, not global" body="Your feed is scoped to your own estate — not the whole city, not the whole internet." />
+          <FeatureCard title="Hyperlocal, not global" body="Your feed is scoped to your own state — not the whole city, not the whole internet." />
           <FeatureCard title="Trust, not stars" body="A trust ring builds from real vouches by people who've actually dealt with a seller." />
           <FeatureCard title="Share where you already talk" body="Post once, share to WhatsApp in one tap — no new app your neighbours have to learn." />
         </div>
       </section>
 
       <footer className="border-t border-slate-200 px-5 py-8 text-center text-xs text-slate-500">
-        Kobo Circle — built for one estate at a time.
+        Kobo Circle — built for one state at a time.
       </footer>
     </main>
   );
