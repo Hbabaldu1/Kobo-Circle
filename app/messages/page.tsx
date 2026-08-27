@@ -109,10 +109,6 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
           <Link href="/feed" className="text-xl">←</Link>
           <h1 className="text-2xl font-bold">Messages</h1>
         </div>
-        <div className="flex items-center gap-4 text-xl">
-          <button type="button" aria-label="Settings">⚙</button>
-          <button type="button" aria-label="Search">🔍</button>
-        </div>
       </div>
 
       <div className="flex gap-4 overflow-x-auto py-4 scrollbar-none">
