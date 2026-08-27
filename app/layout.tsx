@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
-import { createAuthServerClient } from '@/lib/supabase/server';
-import { MobileBottomNav } from '@/components/mobile-bottom-nav';
-import { TopNav } from '@/components/top-nav';
+import { AppNavWrapper } from '@/components/app-nav-wrapper';
+import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -40,9 +39,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="en">
       <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans ${user ? 'pb-16 md:pb-0' : 'pb-0'}`}>
-        {user && <TopNav user={user} />}
-        <main>{children}</main>
-        {user && <MobileBottomNav />}
+        <AppNavWrapper initialAuthenticated={Boolean(user)}>{children}</AppNavWrapper>
       </body>
     </html>
   );
