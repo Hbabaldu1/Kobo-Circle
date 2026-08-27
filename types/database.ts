@@ -58,6 +58,18 @@ export interface Database {
           referencedColumns: ['id'];
         }];
       };
+      conversations: {
+        Row: { id: string; participant_one: string; participant_two: string; listing_id: string | null; created_at: string; updated_at: string };
+        Insert: { id?: string; participant_one: string; participant_two: string; listing_id?: string | null; created_at?: string; updated_at?: string };
+        Update: Partial<{ updated_at: string }>;
+        Relationships: [];
+      };
+      messages: {
+        Row: { id: string; conversation_id: string; sender_id: string; content: string; read_at: string | null; created_at: string };
+        Insert: { id?: string; conversation_id: string; sender_id: string; content: string; read_at?: string | null; created_at?: string };
+        Update: Partial<{ read_at: string }>;
+        Relationships: [];
+      };
       vouches: {
         Row: { id: string; voucher_id: string; vouched_for_id: string; note: string | null; created_at: string };
         Insert: { id?: string; voucher_id: string; vouched_for_id: string; note?: string | null; created_at?: string };
