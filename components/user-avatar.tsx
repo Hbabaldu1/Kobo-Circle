@@ -23,11 +23,13 @@ export function UserAvatar({
   id,
   name,
   avatarUrl,
+  isOnline = false,
   className = 'h-8 w-8 text-sm',
 }: {
   id: string;
   name: string;
   avatarUrl?: string | null;
+  isOnline?: boolean;
   className?: string;
 }) {
   const [imgError, setImgError] = useState(false);
@@ -38,8 +40,9 @@ export function UserAvatar({
     setImgError(false);
   }, [avatarUrl]);
 
+  const statusDot = isOnline ? <span aria-label="Online" className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-leaf" /> : null;
   if (avatarUrl && !imgError) {
-    return (
+    return <div className="relative shrink-0">
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={avatarUrl}
@@ -48,16 +51,13 @@ export function UserAvatar({
         width={48}
         height={48}
         className={`rounded-full object-cover shrink-0 ${className}`}
-      />
-    );
+      />{statusDot}</div>;
   }
 
   return (
-    <div
+    <div className="relative shrink-0"><div
       className={`grid place-items-center rounded-full font-bold uppercase shrink-0 ${colorClass} ${className}`}
       aria-label={name}
-    >
-      {initial}
-    </div>
+    >{initial}</div>{statusDot}</div>
   );
 }
