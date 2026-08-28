@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const parsed = userProfileSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'Check your name and choose a street.' },
+      { error: 'Check your name and choose a ward.' },
       { status: 400 }
     );
   }
@@ -47,25 +47,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'This email address is already registered to another account.' }, { status: 409 });
     }
 
-    const { data: street, error: streetError } = await supabase
-      .from('streets')
-      .select('id, estate_id')
-      .eq('id', parsed.data.streetId)
+    const { data: ward, error: wardError } = await supabase
+      .from('wards')
+      .select('id, lga_id')
+      .eq('id', parsed.data.wardId)
       .maybeSingle();
 
-    if (streetError) {
-      console.error('Street lookup failed:', streetError.message);
+    if (wardError) {
+      console.error('Ward lookup failed:', wardError.message);
       return NextResponse.json(
-        { error: 'We could not verify that street. Please try again.' },
+        { error: 'We could not verify that ward. Please try again.' },
         { status: 500 }
       );
     }
 
-    if (!street) {
+    if (!ward) {
       return NextResponse.json(
-        { error: 'That street is unavailable. Please choose another one.' },
+        { error: 'That ward is unavailable. Please choose another one.' },
         { status: 400 }
       );
+    }
+
+    const { data: lga, error: lgaError } = await supabase.from('lgas').select('state_id').eq('id', ward.lga_id).maybeSingle();
+    if (lgaError || !lga) {
+      console.error('LGA lookup failed:', lgaError?.message);
+      return NextResponse.json({ error: 'We could not verify that ward. Please try again.' }, { status: 400 });
     }
 
     const { error: insertError } = await supabase.from('users').insert({
@@ -73,8 +79,9 @@ export async function POST(request: Request) {
       name: parsed.data.name,
       email: user.email,
       phone: parsed.data.phone,
-      street_id: street.id,
-      estate_id: street.estate_id,
+      ward_id: ward.id,
+      lga_id: ward.lga_id,
+      state_id: lga.state_id,
     });
 
     if (insertError) {
@@ -93,7 +100,7 @@ export async function POST(request: Request) {
       }
       console.error('Onboarding insert failed:', insertError.message);
       return NextResponse.json(
-        { error: 'We could not save your estate details. Please try again.' },
+        { error: 'We could not save your location details. Please try again.' },
         { status: 400 }
       );
     }

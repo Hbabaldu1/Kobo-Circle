@@ -4,6 +4,9 @@ export type ListingStatus = 'active' | 'sold' | 'closed';
 export interface Database {
   public: {
     Tables: {
+      states: { Row: { id: string; name: string; created_at: string }; Insert: { id?: string; name: string; created_at?: string }; Update: Partial<{ name: string }>; Relationships: []; };
+      lgas: { Row: { id: string; state_id: string; name: string; created_at: string }; Insert: { id?: string; state_id: string; name: string; created_at?: string }; Update: Partial<{ state_id: string; name: string }>; Relationships: []; };
+      wards: { Row: { id: string; lga_id: string; name: string; created_at: string }; Insert: { id?: string; lga_id: string; name: string; created_at?: string }; Update: Partial<{ lga_id: string; name: string }>; Relationships: []; };
       estates: {
         Row: { id: string; name: string; city: string; created_at: string };
         Insert: { id?: string; name: string; city: string; created_at?: string };
@@ -23,9 +26,9 @@ export interface Database {
         }];
       };
       users: {
-        Row: { id: string; name: string; email: string; phone: string | null; avatar_url: string | null; street_id: string; estate_id: string; created_at: string };
-        Insert: { id: string; name: string; email: string; phone?: string | null; avatar_url?: string | null; street_id: string; estate_id: string; created_at?: string };
-        Update: Partial<{ name: string; email: string; phone: string | null; avatar_url: string | null; street_id: string; estate_id: string }>;
+        Row: { id: string; name: string; email: string; phone: string | null; avatar_url: string | null; street_id: string | null; estate_id: string | null; state_id: string; lga_id: string; ward_id: string; created_at: string };
+        Insert: { id: string; name: string; email: string; phone?: string | null; avatar_url?: string | null; street_id?: string | null; estate_id?: string | null; state_id: string; lga_id: string; ward_id: string; created_at?: string };
+        Update: Partial<{ name: string; email: string; phone: string | null; avatar_url: string | null; street_id: string | null; estate_id: string | null; state_id: string; lga_id: string; ward_id: string }>;
         Relationships: [{
           foreignKeyName: 'users_estate_id_fkey';
           columns: ['estate_id'];
@@ -41,8 +44,8 @@ export interface Database {
         }];
       };
       listings: {
-        Row: { id: string; user_id: string; estate_id: string; type: ListingType; title: string; price: string | null; description: string | null; photo_url: string | null; status: ListingStatus; created_at: string };
-        Insert: { id?: string; user_id: string; estate_id: string; type: ListingType; title: string; price?: string | null; description?: string | null; photo_url?: string | null; status?: ListingStatus; created_at?: string };
+        Row: { id: string; user_id: string; estate_id: string | null; state_id: string; lga_id: string; type: ListingType; title: string; price: string | null; description: string | null; photo_url: string | null; status: ListingStatus; created_at: string };
+        Insert: { id?: string; user_id: string; estate_id?: string | null; state_id: string; lga_id: string; type: ListingType; title: string; price?: string | null; description?: string | null; photo_url?: string | null; status?: ListingStatus; created_at?: string };
         Update: Partial<{ title: string; price: string | null; description: string | null; photo_url: string | null; status: ListingStatus }>;
         Relationships: [{
           foreignKeyName: 'listings_estate_id_fkey';

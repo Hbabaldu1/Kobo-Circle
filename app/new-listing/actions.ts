@@ -36,7 +36,7 @@ export async function createListing(
 
     const { data: profile, error: profileError } = await supabase
       .from('users')
-      .select('estate_id')
+      .select('state_id, lga_id')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -51,7 +51,8 @@ export async function createListing(
       .from('listings')
       .insert({
         user_id: user.id,
-        estate_id: profile.estate_id,
+        state_id: profile.state_id,
+        lga_id: profile.lga_id,
         ...parsed.data,
       })
       .select('id')

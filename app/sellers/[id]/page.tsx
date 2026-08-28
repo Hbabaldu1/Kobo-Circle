@@ -9,15 +9,16 @@ export default async function SellerPage({ params }: { params: { id: string } })
   const supabase = createAuthServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
-  // RLS on users limits this profile query to the viewer's estate.
-  const { data: seller } = await supabase.from('users').select('id, name, phone, avatar_url, street_id').eq('id', params.id).maybeSingle();
+  // RLS on users limits this profile query to the viewer's LGA.
+  const { data: seller } = await supabase.from('users').select('id, name, phone, avatar_url, ward_id').eq('id', params.id).maybeSingle();
   if (!seller) notFound();
-  const [{ data: street }, { data: trust }, { data: notes }, { data: latestListing }] = await Promise.all([
-    supabase.from('streets').select('name').eq('id', seller.street_id).maybeSingle(),
+  const [{ data: ward }, { data: trust }, { data: notes }, { data: latestListing }] = await Promise.all([
+    supabase.from('wards').select('name, lga_id').eq('id', seller.ward_id).maybeSingle(),
     supabase.from('seller_trust').select('vouch_count, trust_ratio').eq('user_id', seller.id).maybeSingle(),
     supabase.from('vouches').select('id, voucher_id, note, created_at').eq('vouched_for_id', seller.id).order('created_at', { ascending: false }),
     supabase.from('listings').select('title').eq('user_id', seller.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
   ]);
+  const { data: lga } = ward ? await supabase.from('lgas').select('name').eq('id', ward.lga_id).maybeSingle() : { data: null };
   const vouches = (notes ?? []) as VouchRow[];
   let voucherById = new Map<string, VoucherRow>();
 
@@ -44,5 +45,5 @@ export default async function SellerPage({ params }: { params: { id: string } })
     };
   });
 
-  return <SellerProfile sellerId={seller.id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} streetName={street?.name ?? 'Estate neighbour'} initialVouchCount={trust?.vouch_count ?? 0} initialTrustRatio={trust?.trust_ratio ?? 0} phone={seller.phone} listingTitle={latestListing?.title ?? undefined} notes={vouchNotes} isOwner={seller.id === user.id} />;
+  return <SellerProfile sellerId={seller.id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} wardLgaName={ward ? `${ward.name}, ${lga?.name ?? 'Local Government'}` : 'Local neighbour'} initialVouchCount={trust?.vouch_count ?? 0} initialTrustRatio={trust?.trust_ratio ?? 0} phone={seller.phone} listingTitle={latestListing?.title ?? undefined} notes={vouchNotes} isOwner={seller.id === user.id} />;
 }

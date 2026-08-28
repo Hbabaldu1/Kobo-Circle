@@ -10,12 +10,13 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   const supabase = createAuthServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
-  // RLS on listings ensures this query cannot return a cross-estate listing.
+  // RLS on listings ensures this query cannot return a cross-LGA listing.
   const { data: listing } = await supabase.from('listings').select('id, user_id, type, title, price, description, status, created_at, photo_url').eq('id', params.id).maybeSingle();
   if (!listing) notFound();
-  const { data: seller } = await supabase.from('users').select('name, phone, avatar_url, street_id').eq('id', listing.user_id).maybeSingle();
+  const { data: seller } = await supabase.from('users').select('name, phone, avatar_url, ward_id').eq('id', listing.user_id).maybeSingle();
   if (!seller) notFound();
-  const { data: street } = await supabase.from('streets').select('name').eq('id', seller.street_id).maybeSingle();
+  const { data: ward } = await supabase.from('wards').select('name, lga_id').eq('id', seller.ward_id).maybeSingle();
+  const { data: lga } = ward ? await supabase.from('lgas').select('name').eq('id', ward.lga_id).maybeSingle() : { data: null };
   const typeLabel = listing.type === 'sale' ? 'For sale' : listing.type === 'service' ? 'Service' : 'Request';
   const phone = seller.phone?.trim() || undefined;
   const whatsappLink = buildWhatsAppListingLink(phone, listing.title) ?? undefined;
@@ -34,7 +35,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           <TrustRing id={listing.user_id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} percentage={trustPercentage} />
           <div>
             <a href={`/sellers/${listing.user_id}`} className="font-semibold text-ink hover:underline">{seller.name}</a>
-            <p className="text-sm text-slate-600">{street?.name ?? 'Estate neighbour'}</p>
+            <p className="text-sm text-slate-600">{ward ? `${ward.name}, ${lga?.name ?? 'Local Government'}` : 'Local neighbour'}</p>
             {phone ? <p className="mt-1 text-sm text-slate-700">{phone}</p> : <p className="mt-1 text-sm text-slate-500">This seller hasn&apos;t provided a phone number.</p>}
           </div>
         </div>

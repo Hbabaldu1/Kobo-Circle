@@ -16,7 +16,7 @@ export type FeedListing = {
   photo_url: string | null;
   seller_name: string;
   avatar_url: string | null;
-  street_name: string;
+  ward_lga_name: string;
   vouch_count: number;
   trust_ratio: number;
 };
@@ -124,7 +124,7 @@ function ListingCard({
           />
           <Link href={listing.user_id === currentUserId ? '/profile' : `/sellers/${listing.user_id}`} className="min-w-0 flex-1">
             <p className="truncate font-semibold text-ink">{listing.seller_name}</p>
-            <p className="truncate text-xs text-slate-500">{listing.street_name}</p>
+            <p className="truncate text-xs text-slate-500">{listing.ward_lga_name}</p>
           </Link>
           <span className="font-mono text-sm font-semibold text-adire">{Math.round(percentage)}%</span>
         </div>

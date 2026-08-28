@@ -10,7 +10,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jet
 
 export const metadata: Metadata = {
   title: 'Kobo Circle',
-  description: 'A hyperlocal marketplace for your estate.',
+  description: 'A hyperlocal marketplace for your local community.',
   manifest: '/manifest.json',
   icons: {
     icon: '/icons/icon-192.svg',
