@@ -261,7 +261,7 @@ export function ChatWindow({
   const hasText = content.trim().length > 0;
 
   return (
-    <div className="mx-auto top-0 flex h-[calc(100vh-64px)] max-w-2xl flex-col overflow-hidden border-x border-slate-200 bg-slate-50 text-slate-900">
+    <div className="mx-auto flex h-[calc(100vh-64px)] max-w-2xl flex-col overflow-hidden border-x border-slate-200 bg-slate-50 text-slate-900">
    
       {/* Internal Scrollable Message Feed */}
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-6" aria-live="polite">
