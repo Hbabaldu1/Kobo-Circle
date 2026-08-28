@@ -13,7 +13,7 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ name, avatarUrl, profileId, phone }: ChatHeaderProps) {
   return (
-    <header className="sticky top-20 z-40 mx-auto flex max-w-2xl items-center justify-between border-b border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-xs">
+    <header className="sticky top-25 z-40 mx-auto flex max-w-2xl items-center justify-between border-b border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-xs">
       <div className="flex items-center gap-3">
         <Link href="/messages" className="text-slate-600 hover:text-slate-900" aria-label="Back to messages">
           <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
