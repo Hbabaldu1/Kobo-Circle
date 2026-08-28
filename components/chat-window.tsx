@@ -317,7 +317,7 @@ export function ChatWindow({
       </div>
 
       {/* Input Form Footer */}
-      <form onSubmit={handleSubmit} className="shrink-0 border-t border-slate-200 bg-white px-3 py-2.5">
+      <form onSubmit={handleSubmit} className="sticky shrink-0 border-t border-slate-200 bg-white px-3 py-2.5">
         <div className="flex items-center gap-2">
           <input
             value={content}
