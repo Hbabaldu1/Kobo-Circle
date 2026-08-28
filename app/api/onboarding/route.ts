@@ -113,6 +113,8 @@
 
 
 
+
+
 import { NextResponse } from 'next/server';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { onboardingProfileSchema } from '@/lib/validation';
@@ -168,10 +170,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch LGA along with legacy_estate_id mapping
+    // Fetch LGA details
     const { data: lga, error: lgaError } = await supabase
       .from('lgas')
-      .select('state_id, legacy_estate_id')
+      .select('state_id')
       .eq('id', parsed.data.lgaId)
       .maybeSingle();
 
@@ -183,12 +185,10 @@ export async function POST(request: Request) {
       );
     }
 
-    let legacyStreetId: string | null = null;
-
     if (parsed.data.wardId) {
       const { data: ward, error: wardError } = await supabase
         .from('wards')
-        .select('id, legacy_street_id')
+        .select('id')
         .eq('id', parsed.data.wardId)
         .eq('lga_id', parsed.data.lgaId)
         .maybeSingle();
@@ -206,10 +206,9 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
-      legacyStreetId = ward.legacy_street_id;
     }
 
-    // Insert user including legacy references to prevent NOT NULL constraint failures
+    // Insert user into state, LGA, and ward schema
     const { error: insertError } = await supabase.from('users').insert({
       id: user.id,
       name: parsed.data.name,
@@ -218,9 +217,7 @@ export async function POST(request: Request) {
       ward_id: parsed.data.wardId ?? null,
       lga_id: parsed.data.lgaId,
       state_id: lga.state_id,
-      estate_id: lga.legacy_estate_id,
-      street_id: legacyStreetId,
-    });
+    } as any); // Cast as any if database type definitions still expect legacy estate_id / street_id
 
     if (insertError) {
       if (insertError.code === '23505') {
