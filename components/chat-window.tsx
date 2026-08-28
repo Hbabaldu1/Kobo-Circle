@@ -182,12 +182,11 @@ export function ChatWindow({
         })}
         <div ref={endRef} />
       </div>
-    </div>
 
       {/* Input Form Footer pinned above bottom navigation */}
       <form
         onSubmit={handleSubmit}
-        className="sticky bottom-0 z-20 shrink-0 border-t border-slate-200 bg-white px-3 py-2.5"
+        className="bottom-0 z-20 shrink-0 border-t border-slate-200 bg-white px-3 py-2.5"
       >
         <div className="flex items-center gap-2">
           <button
@@ -225,5 +224,6 @@ export function ChatWindow({
           </button>
         </div>
       </form>
+    </div>
   );
 }
