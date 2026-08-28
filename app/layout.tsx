@@ -36,10 +36,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const supabase = createAuthServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  return (
+ return (
     <html lang="en">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans ${user ? 'pb-16 md:pb-0' : 'pb-0'}`}>
-        <TopNav initialAuthenticated={Boolean(user)}>{children}</TopNav>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans`}>
+        <AppNavWrapper initialAuthenticated={Boolean(user)}>
+          {children}
+        </AppNavWrapper>
       </body>
     </html>
   );
