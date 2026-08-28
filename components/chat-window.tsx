@@ -266,7 +266,7 @@ export function ChatWindow({
 
 
       {/* Internal Scrollable Message Feed */}
-      <div className="sticky flex-1 space-y-3 overflow-y-auto px-4 py-6" aria-live="polite">
+      <div className="sticky top-10 flex-1 space-y-3 overflow-y-auto px-4 py-6" aria-live="polite">
         <section className="mb-8 flex flex-col items-center text-center">
           <UserAvatar
             id={counterparty.id}
