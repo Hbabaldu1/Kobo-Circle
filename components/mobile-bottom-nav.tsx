@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { NavIcon } from '@/components/nav-icon';
+import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 const tabs = [
@@ -17,6 +18,7 @@ export function MobileBottomNav() {
   const pathname = usePathname();
   const supabase = useMemo(() => createClient(), []);
   const [unreadCount, setUnreadCount] = useState(0);
+  const pathname = usePathname();
 
   useEffect(() => {
     async function loadUnreadCount() {
@@ -50,7 +52,10 @@ export function MobileBottomNav() {
       void supabase.removeChannel(channel);
     };
   }, [supabase]);
-
+  
+  if (pathname.startsWith('/messages/')) {
+      return null;
+    }
   return <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgba(27,31,59,0.08)] backdrop-blur md:hidden">
     <div className="sticky mx-auto grid max-w-lg grid-cols-4">
       {tabs.map((tab) => {
