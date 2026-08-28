@@ -1,3 +1,4 @@
+// components/app-nav-wrapper.tsx
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
@@ -18,6 +19,7 @@ export function AppNavWrapper({ children, initialAuthenticated = false }: AppNav
   const supabase = useMemo(() => createClient(), []);
   const [authenticated, setAuthenticated] = useState(initialAuthenticated);
   const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+  const isDirectChat = pathname.startsWith('/messages/') && pathname !== '/messages';
 
   useEffect(() => {
     setAuthenticated(initialAuthenticated);
@@ -36,7 +38,8 @@ export function AppNavWrapper({ children, initialAuthenticated = false }: AppNav
   return (
     <>
       <TopNav />
-      <div className="pb-20 md:pb-0">{children}</div>
+      {/* Remove pb-20 on direct chat pages so the view lock stays exact */}
+      <div className={isDirectChat ? 'h-full' : 'pb-20 md:pb-0'}>{children}</div>
       <MobileBottomNav />
     </>
   );
