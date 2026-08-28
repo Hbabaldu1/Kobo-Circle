@@ -21,7 +21,7 @@ export default function HomePage() {
 
       <section className="animate-card-enter mx-auto max-w-2xl px-5 pb-20 pt-14 text-center sm:pt-20">
         <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
-          Trade with people your street already trusts.
+          Trade with people in your Local Government already trust.
         </h1>
         <p className="mx-auto mt-5 max-w-lg text-base leading-7 text-slate-600">
           One ward, one feed. Every neighbour carries a trust ring built by

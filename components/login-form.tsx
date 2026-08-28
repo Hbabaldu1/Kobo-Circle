@@ -25,7 +25,7 @@ export function LoginForm() {
     window.location.assign('/feed');
   }
 
-  return <AuthShell title="Welcome home" description="Sign in to your estate marketplace.">
+  return <AuthShell title="Welcome home" description="Sign in to your local marketplace.">
     <form onSubmit={submit} className="mt-6 space-y-4">
       <Field id="email" label="Email address" type="email" value={email} onChange={setEmail} autoComplete="email" />
       <Field id="password" label="Password" type="password" value={password} onChange={setPassword} autoComplete="current-password" />

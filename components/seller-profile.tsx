@@ -23,7 +23,7 @@ function LogoutButton() {
 export function SellerProfile({
   sellerId,
   name,
-  streetName,
+  wardLgaName,
   initialVouchCount,
   initialTrustRatio,
   notes,
@@ -35,7 +35,7 @@ export function SellerProfile({
 }: {
   sellerId: string;
   name: string;
-  streetName: string;
+  wardLgaName: string;
   initialVouchCount: number;
   initialTrustRatio: number;
   phone: string | null;
@@ -73,7 +73,7 @@ export function SellerProfile({
           <TrustRing id={sellerId} name={name} avatarUrl={avatarUrl} percentage={percentage} animate={justVouched} currentUserId={currentUserId} />
           <div>
             <h1 className="font-heading text-2xl font-bold text-ink">{name}</h1>
-            <p className="text-sm text-slate-600">{streetName}</p>
+            <p className="text-sm text-slate-600">{wardLgaName}</p>
           </div>
           <span className="ml-auto font-mono text-lg font-bold text-adire">
             {Math.round(percentage)}%
