@@ -13,18 +13,11 @@ const signupSchema = z.object({
 const MAX_SIGNUP_ATTEMPTS = 3;
 const WINDOW_MINUTES = 60;
 
-// Helper to safely instantiate the admin client at runtime
-function getAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables.');
-  }
-
-  return createClient(supabaseUrl, supabaseKey);
-}
+// Initialize Supabase admin client with service role key (or fallback to your admin helper import if available)
+const adminClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -45,8 +38,6 @@ export async function POST(request: Request) {
   const { email } = parsed.data;
 
   try {
-    const adminClient = getAdminClient();
-
     const { data: existingUser, error: existingUserError } = await adminClient
       .from('users')
       .select('id')
@@ -55,17 +46,11 @@ export async function POST(request: Request) {
 
     if (existingUserError) {
       console.error('Duplicate email check failed:', existingUserError.message);
-      return NextResponse.json(
-        { error: 'We could not verify this email address. Please try again.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'We could not verify this email address. Please try again.' }, { status: 500 });
     }
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'This email address is already registered to another account.' },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: 'This email address is already registered to another account.' }, { status: 409 });
     }
 
     const windowStart = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000).toISOString();
@@ -79,7 +64,7 @@ export async function POST(request: Request) {
     if (countError) {
       console.error('Signup rate-limit check failed:', countError.message);
       // Fail open on infra errors — don't block a real signup because
-      // the rate-limit table had a hiccup.
+      // the rate-limit table had a hiccup. Log for visibility instead.
       return NextResponse.json({ ok: true });
     }
 
