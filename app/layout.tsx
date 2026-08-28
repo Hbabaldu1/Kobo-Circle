@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
-import { TopNav } from '@/components/app-nav-wrapper';
+import { AppNavWrapper } from '@/components/app-nav-wrapper';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import './globals.css';
 
