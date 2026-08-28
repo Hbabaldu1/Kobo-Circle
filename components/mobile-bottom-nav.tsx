@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { NavIcon } from '@/components/nav-icon';
 
 const tabs = [
-  { href: '/feed', label: 'Home', icon: '⌂' },
-  { href: '/new-listing', label: 'Add Post', icon: '+' },
-  { href: '/messages', label: 'Messages', icon: '💬' },
-  { href: '/profile', label: 'Profile', icon: '◉' },
-];
+  { href: '/feed', label: 'Feed', icon: 'home' },
+  { href: '/new-listing', label: 'Add Post', icon: 'post' },
+  { href: '/messages', label: 'Messages', icon: 'messages' },
+  { href: '/profile', label: 'Profile', icon: 'profile' },
+] as const;
 
 export function MobileBottomNav({ unreadCount = 0 }: { unreadCount?: number }) {
   const pathname = usePathname();
@@ -16,8 +17,8 @@ export function MobileBottomNav({ unreadCount = 0 }: { unreadCount?: number }) {
     <div className="mx-auto grid max-w-lg grid-cols-4">
       {tabs.map((tab) => {
         const active = pathname === tab.href || (tab.href === '/messages' && pathname.startsWith('/messages'));
-        return <Link key={tab.href} href={tab.href} className={`relative flex min-h-16 flex-col items-center justify-center gap-1 text-xs font-semibold ${active ? 'text-adire' : 'text-slate-500'}`}>
-          <span className="text-lg leading-none" aria-hidden="true">{tab.icon}</span><span>{tab.label}</span>
+        return <Link key={tab.href} href={tab.href} aria-label={tab.label} className={`relative flex min-h-16 items-center justify-center ${active ? 'text-adire' : 'text-slate-500'}`}>
+          <NavIcon name={tab.icon} className="h-6 w-6" />
           {tab.href === '/messages' && unreadCount > 0 && <span className="absolute top-2 ml-5 min-w-4 rounded-full bg-brick px-1 text-center text-[10px] leading-4 text-white">{unreadCount > 99 ? '99+' : unreadCount}</span>}
         </Link>;
       })}

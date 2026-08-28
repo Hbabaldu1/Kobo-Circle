@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import { TopNav } from '@/components/top-nav';
 
-const publicRoutes = ['/login', '/signup', '/onboarding', '/auth'];
+const publicRoutes = ['/', '/login', '/signup', '/check-email', '/onboarding', '/auth'];
 
 interface AppNavWrapperProps {
   children: React.ReactNode;
