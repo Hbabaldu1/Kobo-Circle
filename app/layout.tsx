@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
-import { AppNavWrapper } from '@/components/app-nav-wrapper';
+import { TopNav } from '@/components/app-nav-wrapper';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import './globals.css';
 
@@ -39,7 +39,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="en">
       <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans ${user ? 'pb-16 md:pb-0' : 'pb-0'}`}>
-        <AppNavWrapper initialAuthenticated={Boolean(user)}>{children}</AppNavWrapper>
+        <TopNav initialAuthenticated={Boolean(user)}>{children}</TopNav>
       </body>
     </html>
   );
