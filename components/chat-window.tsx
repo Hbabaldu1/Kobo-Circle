@@ -128,10 +128,16 @@ export function ChatWindow({
   const hasText = content.trim().length > 0;
 
   return (
-    <div className="relative mx-auto flex h-[calc(100dvh-64px)] pb-[56px] md:pb-0 max-w-2xl flex-col overflow-hidden border-x border-slate-200 bg-slate-50 text-slate-900">
+    /* 
+      1. h-[100dvh] locks the layout to the exact dynamic viewport.
+      2. flex flex-col & overflow-hidden prevents the outer page/layout from scrolling.
+    */
+    <div className="fixed inset-x-0 bottom-0 top-14 z-10 flex flex-col overflow-hidden bg-slate-50 text-slate-900 md:relative md:top-0 md:h-[calc(100vh-64px)]">
       
-      {/* Scrollable Message Feed */}
-      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-6" aria-live="polite">
+      {/* Header / Sub-header info if needed */}
+      
+      {/* Message Feed - scrollable area only */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-3 oversustain-contain">
         <section className="mb-8 flex flex-col items-center text-center">
           <UserAvatar
             id={counterparty.id}
@@ -142,7 +148,7 @@ export function ChatWindow({
           <h2 className="mt-3 text-lg font-bold text-slate-900">{counterparty.name}</h2>
           <p className="mt-0.5 text-xs text-slate-500">Connected on Kobo Circle</p>
         </section>
-
+        
         {messages.map((message, index) => {
           const outgoing = message.sender_id === currentUserId;
           const previous = messages[index - 1];
@@ -183,10 +189,10 @@ export function ChatWindow({
         <div ref={endRef} />
       </div>
 
-      {/* Input Form Footer pinned above bottom navigation */}
+      {/* Input Form Footer - Pinned directly above keyboard/bottom edge */}
       <form
         onSubmit={handleSubmit}
-        className="bottom-0 z-20 shrink-0 border-t border-slate-200 bg-white px-3 py-2.5"
+        className="shrink-0 border-t border-slate-200 bg-white px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]"
       >
         <div className="flex items-center gap-2">
           <button
