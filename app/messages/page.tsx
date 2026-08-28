@@ -68,12 +68,12 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
   return (
     <main className="mx-auto min-h-screen max-w-2xl px-4 py-4 text-slate-900">
       <div className="flex gap-4 overflow-x-auto py-2 scrollbar-none">
-        <div className="flex flex-col items-center gap-1.5 min-w-[64px]">
+        {/* <div className="flex flex-col items-center gap-1.5 min-w-[64px]">
           <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-slate-200 text-slate-500 font-semibold text-sm">
             <span>+</span>
           </div>
           <span className="text-xs text-slate-500 truncate w-16 text-center">Your note</span>
-        </div>
+        </div> */}
         {rows.map((conversation) => {
           const otherId = conversation.participant_one === user.id ? conversation.participant_two : conversation.participant_one;
           const person = personById.get(otherId);
