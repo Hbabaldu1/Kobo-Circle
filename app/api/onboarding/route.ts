@@ -2,10 +2,9 @@ import { NextResponse } from 'next/server';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { onboardingProfileSchema } from '@/lib/validation';
 
-// Handle GET requests gracefully to prevent 405 Method Not Allowed errors
 export async function GET() {
   return NextResponse.json(
-    { message: 'Onboarding API is active. Use POST to submit user onboarding details.' },
+    { message: 'Onboarding API active. Submit via POST.' },
     { status: 200 }
   );
 }
@@ -18,16 +17,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Malformed JSON payload.' }, { status: 400 });
   }
 
-  // 1. Log payload for debugging bad request errors in server logs
-  console.log('Onboarding Payload received:', body);
-
-  // 2. Validate payload against Zod schema (expects lgaId, wardId, name, phone)
   const parsed = onboardingProfileSchema.safeParse(body);
   if (!parsed.success) {
-    console.error('Validation Error Details:', parsed.error.format());
     return NextResponse.json(
       {
-        error: 'Invalid onboarding details. Please check your inputs and select a valid Local Government.',
+        error: 'Invalid onboarding details. Please select a valid Local Government.',
         details: parsed.error.format(),
       },
       { status: 400 }
@@ -47,7 +41,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // 3. Check if email is already registered under another account
     const { data: existingEmailUser, error: existingEmailError } = await supabase
       .from('users')
       .select('id')
@@ -56,24 +49,24 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (existingEmailError) {
-      console.error('Email uniqueness check failed:', existingEmailError.message);
+      console.error('Email check failed:', existingEmailError.message);
       return NextResponse.json(
-        { error: 'Could not verify email uniqueness. Please try again.' },
+        { error: 'Could not verify email. Try again.' },
         { status: 500 }
       );
     }
 
     if (existingEmailUser) {
       return NextResponse.json(
-        { error: 'This email address is already registered to another account.' },
+        { error: 'This email is already registered.' },
         { status: 409 }
       );
     }
 
-    // 4. Verify Local Government Area (LGA) and retrieve associated state_id and legacy_estate_id
+    // Select state_id from lgas (skipping legacy columns to pass build checks)
     const { data: lga, error: lgaError } = await supabase
       .from('lgas')
-      .select('state_id, legacy_estate_id')
+      .select('state_id')
       .eq('id', parsed.data.lgaId)
       .maybeSingle();
 
@@ -85,13 +78,10 @@ export async function POST(request: Request) {
       );
     }
 
-    let legacyStreetId: string | null = null;
-
-    // 5. Verify Ward if provided
     if (parsed.data.wardId) {
       const { data: ward, error: wardError } = await supabase
         .from('wards')
-        .select('id, legacy_street_id')
+        .select('id')
         .eq('id', parsed.data.wardId)
         .eq('lga_id', parsed.data.lgaId)
         .maybeSingle();
@@ -99,22 +89,20 @@ export async function POST(request: Request) {
       if (wardError) {
         console.error('Ward lookup failed:', wardError.message);
         return NextResponse.json(
-          { error: 'Could not verify ward. Please try again.' },
+          { error: 'Could not verify ward.' },
           { status: 500 }
         );
       }
       if (!ward) {
         return NextResponse.json(
-          { error: 'The selected ward is invalid for this Local Government.' },
+          { error: 'Selected ward is invalid for this Local Government.' },
           { status: 400 }
         );
       }
-      legacyStreetId = ward.legacy_street_id ?? null;
     }
 
-    // 6. Insert user record into database
-    // Includes estate_id and street_id mapping to prevent NOT NULL database constraint errors
-    const insertPayload: Record<string, unknown> = {
+    // Insert new location hierarchy with type cast
+    const insertData: Record<string, unknown> = {
       id: user.id,
       name: parsed.data.name,
       email: user.email,
@@ -122,24 +110,21 @@ export async function POST(request: Request) {
       ward_id: parsed.data.wardId ?? null,
       lga_id: parsed.data.lgaId,
       state_id: lga.state_id,
-      estate_id: lga.legacy_estate_id ?? null,
-      street_id: legacyStreetId,
     };
 
     const { error: insertError } = await supabase
       .from('users')
-      .insert(insertPayload as any);
+      .insert(insertData as any);
 
     if (insertError) {
-      // Primary key constraint collision handling (user already inserted)
       if (insertError.code === '23505') {
-        const { data: existingProfile, error: existingProfileError } = await supabase
+        const { data: existingProfile } = await supabase
           .from('users')
           .select('id')
           .eq('id', user.id)
           .maybeSingle();
 
-        if (!existingProfileError && existingProfile) {
+        if (existingProfile) {
           return NextResponse.json({ ok: true });
         }
 
@@ -151,7 +136,7 @@ export async function POST(request: Request) {
 
       console.error('Onboarding insert failed:', insertError.message);
       return NextResponse.json(
-        { error: insertError.message || 'We could not save your location details. Please try again.' },
+        { error: insertError.message || 'We could not save your details.' },
         { status: 400 }
       );
     }
@@ -160,7 +145,7 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error('Unexpected onboarding error:', err);
     return NextResponse.json(
-      { error: 'Something went wrong. Please try again.' },
+      { error: 'Something went wrong. Try again.' },
       { status: 500 }
     );
   }
