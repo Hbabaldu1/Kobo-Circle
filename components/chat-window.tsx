@@ -128,27 +128,21 @@ export function ChatWindow({
   const hasText = content.trim().length > 0;
 
   return (
-    /* 
-      1. h-[100dvh] locks the layout to the exact dynamic viewport.
-      2. flex flex-col & overflow-hidden prevents the outer page/layout from scrolling.
-    */
-    <div className="fixed inset-x-0 bottom-0 top-14 z-10 flex flex-col overflow-hidden bg-slate-50 text-slate-900 md:relative md:top-0 md:h-[calc(100vh-64px)]">
+    <div className="flex h-[calc(100dvh-56px)] w-full flex-col overflow-hidden bg-slate-50 text-slate-900 md:h-[calc(100vh-64px)]">
       
-      {/* Header / Sub-header info if needed */}
-      
-      {/* Message Feed - scrollable area only */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-3 oversustain-contain">
-        <section className="mb-8 flex flex-col items-center text-center">
+      {/* Scrollable Message Feed */}
+      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4 overscroll-contain">
+        <section className="mb-6 flex flex-col items-center text-center">
           <UserAvatar
             id={counterparty.id}
             name={counterparty.name}
             avatarUrl={counterparty.avatarUrl}
-            className="h-20 w-20 text-xl"
+            className="h-16 w-16 text-lg"
           />
-          <h2 className="mt-3 text-lg font-bold text-slate-900">{counterparty.name}</h2>
-          <p className="mt-0.5 text-xs text-slate-500">Connected on Kobo Circle</p>
+          <h2 className="mt-2 text-base font-bold text-slate-900">{counterparty.name}</h2>
+          <p className="text-xs text-slate-500">Connected on Kobo Circle</p>
         </section>
-        
+
         {messages.map((message, index) => {
           const outgoing = message.sender_id === currentUserId;
           const previous = messages[index - 1];
@@ -160,7 +154,7 @@ export function ChatWindow({
           return (
             <div key={message.id}>
               {showDate && (
-                <p className="my-6 text-center text-xs font-medium text-slate-400">
+                <p className="my-4 text-center text-xs font-medium text-slate-400">
                   {dateLabel(message.created_at)}
                 </p>
               )}
@@ -189,16 +183,16 @@ export function ChatWindow({
         <div ref={endRef} />
       </div>
 
-      {/* Input Form Footer - Pinned directly above keyboard/bottom edge */}
+      {/* Input Form Pinned at Bottom */}
       <form
         onSubmit={handleSubmit}
-        className="shrink-0 border-t border-slate-200 bg-white px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]"
+        className="shrink-0 border-t border-slate-200 bg-white px-3 py-2.5"
       >
         <div className="flex items-center gap-2">
           <button
             type="button"
             aria-label="Attach gallery media"
-            className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-slate-100 rounded-full transition-colors"
+            className="rounded-full p-1.5 text-blue-600 transition-colors hover:bg-slate-100 hover:text-blue-700"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
