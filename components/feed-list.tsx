@@ -50,8 +50,8 @@ export function FeedList({
         </section>
       )}
 
-      {/* Filter Bar Centered */}
-      <div className="mt-6 flex items-center justify-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+      {/* Filter Bar: Left-aligned with padding on mobile, centered on desktop */}
+      <div className="-mx-4 flex items-center justify-start gap-2 overflow-x-auto px-4 pb-2 scrollbar-none sm:mx-0 sm:justify-center sm:px-0">
         {filters.map(({ label, type }) => (
           <button
             key={type}
