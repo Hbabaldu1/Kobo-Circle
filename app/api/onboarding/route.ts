@@ -168,7 +168,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch LGA along with its legacy_estate_id
+    // Fetch LGA along with legacy_estate_id mapping
     const { data: lga, error: lgaError } = await supabase
       .from('lgas')
       .select('state_id, legacy_estate_id')
@@ -206,30 +206,10 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
-
       legacyStreetId = ward.legacy_street_id;
     }
 
-    // Fallback: If no ward selected or ward has no legacy_street_id, lookup any street under the estate
-    if (!legacyStreetId && lga.legacy_estate_id) {
-      const { data: fallbackStreet } = await supabase
-        .from('streets')
-        .select('id')
-        .eq('estate_id', lga.legacy_estate_id)
-        .limit(1)
-        .maybeSingle();
-
-      legacyStreetId = fallbackStreet?.id ?? null;
-    }
-
-    if (!lga.legacy_estate_id || !legacyStreetId) {
-      console.error('Missing legacy estate or street reference for LGA:', parsed.data.lgaId);
-      return NextResponse.json(
-        { error: 'Selected location is missing required legacy mappings.' },
-        { status: 400 }
-      );
-    }
-
+    // Insert user including legacy references to prevent NOT NULL constraint failures
     const { error: insertError } = await supabase.from('users').insert({
       id: user.id,
       name: parsed.data.name,
