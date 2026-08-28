@@ -135,7 +135,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { UserAvatar } from '@/components/user-avatar';
 import type { Database } from '@/types/database';
@@ -170,11 +170,31 @@ export function ChatWindow({
   const [content, setContent] = useState('');
   const [sending, setSending] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    async function markReceivedMessagesAsRead() {
+      const { error } = await supabase
+        .from('messages')
+        .update({ read_at: new Date().toISOString() })
+        .eq('conversation_id', conversationId)
+        .neq('sender_id', currentUserId)
+        .is('read_at', null);
+
+      if (error) {
+        console.error('Could not mark received messages as read:', error.message);
+        return;
+      }
+
+      router.refresh();
+    }
+
+    void markReceivedMessagesAsRead();
+  }, [conversationId, currentUserId, router, supabase]);
 
   useEffect(() => {
     const channel = supabase

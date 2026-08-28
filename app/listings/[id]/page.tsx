@@ -15,7 +15,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   if (!listing) notFound();
   const { data: seller } = await supabase.from('users').select('name, phone, avatar_url, ward_id').eq('id', listing.user_id).maybeSingle();
   if (!seller) notFound();
-  const { data: ward } = await supabase.from('wards').select('name, lga_id').eq('id', seller.ward_id).maybeSingle();
+  const { data: ward } = seller.ward_id ? await supabase.from('wards').select('name, lga_id').eq('id', seller.ward_id).maybeSingle() : { data: null };
   const { data: lga } = ward ? await supabase.from('lgas').select('name').eq('id', ward.lga_id).maybeSingle() : { data: null };
   const typeLabel = listing.type === 'sale' ? 'For sale' : listing.type === 'service' ? 'Service' : 'Request';
   const phone = seller.phone?.trim() || undefined;
