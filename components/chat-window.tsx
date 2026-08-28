@@ -182,6 +182,7 @@ export function ChatWindow({
         })}
         <div ref={endRef} />
       </div>
+    </div>
 
       {/* Input Form Footer pinned above bottom navigation */}
       <form
@@ -224,6 +225,5 @@ export function ChatWindow({
           </button>
         </div>
       </form>
-    </div>
   );
 }
