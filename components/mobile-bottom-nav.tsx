@@ -52,7 +52,7 @@ export function MobileBottomNav() {
   }, [supabase]);
 
   return <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgba(27,31,59,0.08)] backdrop-blur md:hidden">
-    <div className="mx-auto grid max-w-lg grid-cols-4">
+    <div className="sticky mx-auto grid max-w-lg grid-cols-4">
       {tabs.map((tab) => {
         const active = pathname === tab.href || (tab.href === '/messages' && pathname.startsWith('/messages'));
         return <Link key={tab.href} href={tab.href} aria-label={tab.label} className={`relative flex min-h-16 items-center justify-center ${active ? 'text-adire' : 'text-slate-500'}`}>
