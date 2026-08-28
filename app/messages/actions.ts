@@ -19,7 +19,7 @@ export async function getOrCreateConversation(listingId: string, sellerId: strin
     .maybeSingle();
 
   if (lookupError) throw new Error('Could not open this conversation.');
-  if (existing) redirect(`/messages?conversationId=${existing.id}`);
+  if (existing) redirect(`/messages/${existing.id}`);
 
   const { data: conversation, error: insertError } = await supabase
     .from('conversations')
@@ -28,5 +28,5 @@ export async function getOrCreateConversation(listingId: string, sellerId: strin
     .single();
 
   if (insertError || !conversation) throw new Error('Could not start this conversation.');
-  redirect(`/messages?conversationId=${conversation.id}`);
+  redirect(`/messages/${conversation.id}`);
 }
