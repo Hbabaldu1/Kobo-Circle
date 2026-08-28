@@ -263,44 +263,7 @@ export function ChatWindow({
   return (
     <div className="mx-auto flex h-[calc(100vh-64px)] max-w-2xl flex-col overflow-hidden border-x border-slate-200 bg-slate-50 text-slate-900">
       {/* Sticky Header positioned directly below top navbar */}
-      <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 py-3 shadow-2xs">
-        <div className="flex min-w-0 items-center gap-3">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="rounded-full p-1.5 text-slate-600 hover:bg-slate-100 transition-colors"
-            aria-label="Go back"
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-          </button>
-          
-          <Link
-            href={`/sellers/${counterparty.id}`}
-            className="flex min-w-0 items-center gap-2.5 transition-opacity hover:opacity-80"
-          >
-            <UserAvatar
-              id={counterparty.id}
-              name={counterparty.name}
-              avatarUrl={counterparty.avatarUrl}
-              className="h-8 w-8 shrink-0 text-xs"
-            />
-            <span className="truncate font-semibold text-slate-900">
-              {counterparty.name}
-            </span>
-          </Link>
-        </div>
 
-        {listing && (
-          <Link
-            href={`/listings/${listing.id}`}
-            className="shrink-0 text-xs font-semibold text-blue-600 hover:underline"
-          >
-            View listing
-          </Link>
-        )}
-      </div>
 
       {/* Internal Scrollable Message Feed */}
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-6" aria-live="polite">
