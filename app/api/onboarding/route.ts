@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
-import { userProfileSchema } from '@/lib/validation';
+import { onboardingProfileSchema } from '@/lib/validation';
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -10,10 +10,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Malformed request.' }, { status: 400 });
   }
 
-  const parsed = userProfileSchema.safeParse(body);
+  const parsed = onboardingProfileSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'Check your name and choose a ward.' },
+      { error: 'Check your name and choose a Local Government.' },
       { status: 400 }
     );
   }
@@ -47,31 +47,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'This email address is already registered to another account.' }, { status: 409 });
     }
 
-    const { data: ward, error: wardError } = await supabase
-      .from('wards')
-      .select('id, lga_id')
-      .eq('id', parsed.data.wardId)
-      .maybeSingle();
-
-    if (wardError) {
-      console.error('Ward lookup failed:', wardError.message);
-      return NextResponse.json(
-        { error: 'We could not verify that ward. Please try again.' },
-        { status: 500 }
-      );
-    }
-
-    if (!ward) {
-      return NextResponse.json(
-        { error: 'That ward is unavailable. Please choose another one.' },
-        { status: 400 }
-      );
-    }
-
-    const { data: lga, error: lgaError } = await supabase.from('lgas').select('state_id').eq('id', ward.lga_id).maybeSingle();
+    const { data: lga, error: lgaError } = await supabase.from('lgas').select('state_id').eq('id', parsed.data.lgaId).maybeSingle();
     if (lgaError || !lga) {
       console.error('LGA lookup failed:', lgaError?.message);
-      return NextResponse.json({ error: 'We could not verify that ward. Please try again.' }, { status: 400 });
+      return NextResponse.json({ error: 'We could not verify that Local Government. Please try again.' }, { status: 400 });
+    }
+
+    if (parsed.data.wardId) {
+      const { data: ward, error: wardError } = await supabase
+        .from('wards')
+        .select('id')
+        .eq('id', parsed.data.wardId)
+        .eq('lga_id', parsed.data.lgaId)
+        .maybeSingle();
+
+      if (wardError) {
+        console.error('Ward lookup failed:', wardError.message);
+        return NextResponse.json({ error: 'We could not verify that ward. Please try again.' }, { status: 500 });
+      }
+      if (!ward) return NextResponse.json({ error: 'That ward is unavailable for this Local Government.' }, { status: 400 });
     }
 
     const { error: insertError } = await supabase.from('users').insert({
@@ -79,8 +73,8 @@ export async function POST(request: Request) {
       name: parsed.data.name,
       email: user.email,
       phone: parsed.data.phone,
-      ward_id: ward.id,
-      lga_id: ward.lga_id,
+      ward_id: parsed.data.wardId ?? null,
+      lga_id: parsed.data.lgaId,
       state_id: lga.state_id,
     });
 

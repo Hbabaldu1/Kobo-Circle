@@ -6,8 +6,12 @@ function cleanText(value: string): string {
 
 export const userProfileSchema = z.object({
   name: z.string().trim().min(2).max(60).transform(cleanText),
-  wardId: z.string().uuid(),
+  wardId: z.string().uuid().optional(),
   phone: z.string().max(20).optional(),
+});
+
+export const onboardingProfileSchema = userProfileSchema.extend({
+  lgaId: z.string().uuid(),
 });
 
 export const listingStatusSchema = z.enum(['active', 'sold', 'closed']);
