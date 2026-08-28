@@ -38,8 +38,7 @@ export function AppNavWrapper({ children, initialAuthenticated = false }: AppNav
   return (
     <>
       <TopNav />
-      {/* Remove pb-20 on direct chat pages so the view lock stays exact */}
-      <div className={isDirectChat ? 'h-full' : 'pb-20 md:pb-0'}>{children}</div>
+      <div className={isDirectChat ? '' : 'pb-20 md:pb-0'}>{children}</div>
       <MobileBottomNav />
     </>
   );
