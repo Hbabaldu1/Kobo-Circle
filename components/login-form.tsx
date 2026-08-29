@@ -4,6 +4,24 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
+const AUTH_REQUEST_TIMEOUT_MS = 9_000;
+
+async function validateAuthRequest(path: '/api/auth/validate-login' | '/api/auth/validate-signup', email: string, password: string) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), AUTH_REQUEST_TIMEOUT_MS);
+
+  try {
+    return await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,15 +32,26 @@ export function LoginForm() {
     event.preventDefault();
     setError('');
     setLoading(true);
-    const validation = await fetch('/api/auth/validate-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
-    if (!validation.ok) { setError((await validation.json() as { error?: string }).error ?? 'Check your email and password.'); setLoading(false); return; }
-    const { error: signInError } = await createClient().auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (signInError) {
-      setError('We could not sign you in with those details. Confirm your email first, then try again.');
-      return;
+    try {
+      const validation = await validateAuthRequest('/api/auth/validate-login', email, password);
+      if (!validation.ok) {
+        const payload = await validation.json().catch(() => ({})) as { error?: string };
+        setError(payload.error ?? 'Check your email and password.');
+        return;
+      }
+      const { error: signInError } = await createClient().auth.signInWithPassword({ email, password });
+      if (signInError) {
+        setError('We could not sign you in with those details. Confirm your email first, then try again.');
+        return;
+      }
+      window.location.assign('/feed');
+    } catch (error) {
+      setError(error instanceof DOMException && error.name === 'AbortError'
+        ? 'The sign-in request timed out. Please check your connection and try again.'
+        : 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    window.location.assign('/feed');
   }
 
   return <AuthShell title="Welcome home" description="Sign in to your local marketplace.">
@@ -48,12 +77,23 @@ export function SignupForm() {
     setError('');
     if (!passwordIsValid) { setError('Use at least 8 characters and include at least one number.'); return; }
     setLoading(true);
-    const validation = await fetch('/api/auth/validate-signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
-    if (!validation.ok) { setError((await validation.json() as { error?: string }).error ?? 'Check your email and password.'); setLoading(false); return; }
-    const { error: signUpError } = await createClient().auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/login` } });
-    setLoading(false);
-    if (signUpError) { setError(signUpError.message); return; }
-    window.location.assign('/check-email');
+    try {
+      const validation = await validateAuthRequest('/api/auth/validate-signup', email, password);
+      if (!validation.ok) {
+        const payload = await validation.json().catch(() => ({})) as { error?: string };
+        setError(payload.error ?? 'Check your email and password.');
+        return;
+      }
+      const { error: signUpError } = await createClient().auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/login` } });
+      if (signUpError) { setError(signUpError.message); return; }
+      window.location.assign('/check-email');
+    } catch (error) {
+      setError(error instanceof DOMException && error.name === 'AbortError'
+        ? 'The account creation request timed out. Please check your connection and try again.'
+        : 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return <AuthShell title="Create your account" description="Use your email to join Kobo Circle.">
