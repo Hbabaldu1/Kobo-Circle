@@ -12,12 +12,25 @@ const signupSchema = z.object({
 
 const MAX_SIGNUP_ATTEMPTS = 3;
 const WINDOW_MINUTES = 60;
+const SUPABASE_TIMEOUT_MS = 4_500;
 
-// Initialize Supabase admin client with service role key (or fallback to your admin helper import if available)
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+async function withSupabaseTimeout<T>(operation: string, promise: PromiseLike<T>): Promise<T | undefined> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<undefined>((resolve) => {
+    timeoutId = setTimeout(() => resolve(undefined), SUPABASE_TIMEOUT_MS);
+  });
+
+  try {
+    const result = await Promise.race([Promise.resolve(promise), timeout]);
+    if (result === undefined) console.error(`${operation} timed out after ${SUPABASE_TIMEOUT_MS}ms`);
+    return result;
+  } catch (error) {
+    console.error(`${operation} failed:`, error);
+    return undefined;
+  } finally {
+    if (timeoutId !== undefined) clearTimeout(timeoutId);
+  }
+}
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -38,37 +51,50 @@ export async function POST(request: Request) {
   const { email } = parsed.data;
 
   try {
-    const { data: existingUser, error: existingUserError } = await adminClient
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error('Authentication validation is missing Supabase server configuration.');
+      return NextResponse.json({ error: 'Authentication is temporarily unavailable. Please try again.' }, { status: 503 });
+    }
+
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    const existingUserResult = await withSupabaseTimeout('Signup duplicate-email check', adminClient
       .from('users')
       .select('id')
       .eq('email', email)
-      .maybeSingle();
+      .maybeSingle());
 
-    if (existingUserError) {
-      console.error('Duplicate email check failed:', existingUserError.message);
+    if (!existingUserResult) {
+      console.error('Duplicate email check failed open after timeout or transport failure.');
+      return NextResponse.json({ ok: true });
+    }
+
+    if (existingUserResult.error) {
+      console.error('Duplicate email check failed:', existingUserResult.error.message);
       return NextResponse.json({ error: 'We could not verify this email address. Please try again.' }, { status: 500 });
     }
 
-    if (existingUser) {
+    if (existingUserResult.data) {
       return NextResponse.json({ error: 'This email address is already registered to another account.' }, { status: 409 });
     }
 
     const windowStart = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000).toISOString();
 
-    const { count, error: countError } = await adminClient
+    const countResult = await withSupabaseTimeout('Signup rate-limit check', adminClient
       .from('signup_attempts')
       .select('id', { count: 'exact', head: true })
       .eq('email', email)
-      .gte('attempted_at', windowStart);
+      .gte('attempted_at', windowStart));
 
-    if (countError) {
-      console.error('Signup rate-limit check failed:', countError.message);
+    if (!countResult || countResult.error) {
+      if (countResult?.error) console.error('Signup rate-limit check failed:', countResult.error.message);
       // Fail open on infra errors — don't block a real signup because
       // the rate-limit table had a hiccup. Log for visibility instead.
       return NextResponse.json({ ok: true });
     }
 
-    if ((count ?? 0) >= MAX_SIGNUP_ATTEMPTS) {
+    if ((countResult.count ?? 0) >= MAX_SIGNUP_ATTEMPTS) {
       return NextResponse.json(
         {
           error: `Too many signup attempts for this email. Try again in ${WINDOW_MINUTES} minutes, or check your inbox for an existing confirmation link.`,
@@ -77,12 +103,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const { error: insertError } = await adminClient
+    const insertResult = await withSupabaseTimeout('Signup rate-limit insert', adminClient
       .from('signup_attempts')
-      .insert({ email });
+      .insert({ email }));
 
-    if (insertError) {
-      console.error('Failed to record signup attempt:', insertError.message);
+    if (!insertResult || insertResult.error) {
+      if (insertResult?.error) console.error('Failed to record signup attempt:', insertResult.error.message);
+      return NextResponse.json({ ok: true });
     }
 
     return NextResponse.json({ ok: true });
