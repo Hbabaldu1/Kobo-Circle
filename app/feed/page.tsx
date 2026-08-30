@@ -1,138 +1,20 @@
 import { redirect } from 'next/navigation';
-import { FeedList, type FeedListing } from '@/components/feed-list';
+import { FeedList } from '@/components/feed-list';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
+import { getListingsForScope } from './actions';
 
 export const revalidate = 60;
 
-type ListingRow = {
-  id: string;
-  user_id: string;
-  type: FeedListing['type'];
-  title: string;
-  price: string | null;
-  photo_url: string | null;
-};
-
-type SellerRow = {
-  id: string;
-  name: string;
-  avatar_url: string | null;
-  ward_id: string;
-};
-
-type WardRow = {
-  id: string;
-  name: string;
-  lga_id: string;
-};
-
-type LgaRow = {
-  id: string;
-  name: string;
-};
-
-type TrustRow = {
-  user_id: string;
-  vouch_count: number;
-  trust_ratio: number;
-};
-
-export default async function FeedPage({
-  searchParams,
-}: {
-  searchParams: { posted?: string };
-}) {
+export default async function FeedPage({ searchParams }: { searchParams: { posted?: string } }) {
   const supabase = createAuthServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user || !user.email_confirmed_at) redirect('/login');
-
-  const { data: profile } = await supabase
-    .from('users')
-    .select('lga_id')
-    .eq('id', user.id)
-    .maybeSingle();
-
-  if (!profile?.lga_id) redirect('/onboarding');
-
-  const { data: listingRows } = await supabase
-    .from('listings')
-    .select('id,user_id,type,title,price,photo_url')
-    .eq('lga_id', profile.lga_id)
-    .eq('status', 'active')
-    .order('created_at', { ascending: false });
-
-  const listingsData = (listingRows ?? []) as ListingRow[];
-  const sellerIds = [...new Set(listingsData.map((x) => x.user_id))];
-
-  const [{ data: sellerRows }, { data: trustRows }] = sellerIds.length
-    ? await Promise.all([
-        supabase.from('users').select('id,name,avatar_url,ward_id').in('id', sellerIds),
-        supabase.from('seller_trust').select('user_id,vouch_count,trust_ratio').in('user_id', sellerIds),
-      ])
-    : [{ data: [] as SellerRow[] }, { data: [] as TrustRow[] }];
-
-  const sellers = (sellerRows ?? []) as SellerRow[];
-  const wardIds = [...new Set(sellers.map((x) => x.ward_id).filter(Boolean))];
-
-  const { data: wardRows } = wardIds.length
-    ? await supabase.from('wards').select('id,name,lga_id').in('id', wardIds)
-    : { data: [] as WardRow[] };
-
-  const lgaIds = [...new Set(((wardRows ?? []) as WardRow[]).map((x) => x.lga_id))];
-
-  const { data: lgaRows } = lgaIds.length
-    ? await supabase.from('lgas').select('id,name').in('id', lgaIds)
-    : { data: [] as LgaRow[] };
-
-  const sellerById = new Map(sellers.map((x) => [x.id, x]));
-  const wardById = new Map(((wardRows ?? []) as WardRow[]).map((x) => [x.id, x]));
-  const lgaById = new Map(((lgaRows ?? []) as LgaRow[]).map((x) => [x.id, x]));
-  const trustById = new Map(((trustRows ?? []) as TrustRow[]).map((x) => [x.user_id, x]));
-
-  const listings = listingsData.flatMap((listing): FeedListing[] => {
-    const seller = sellerById.get(listing.user_id);
-    if (!seller) return [];
-    const ward = wardById.get(seller.ward_id);
-    const trust = trustById.get(seller.id);
-    return [
-      {
-        ...listing,
-        seller_name: seller.name,
-        avatar_url: seller.avatar_url,
-        ward_lga_name: ward
-          ? `${ward.name}, ${lgaById.get(ward.lga_id)?.name ?? 'Local Government'}`
-          : 'Local neighbour',
-        vouch_count: trust?.vouch_count ?? 0,
-        trust_ratio: trust?.trust_ratio ?? 0,
-      },
-    ];
-  });
-
-  return (
-    <main className="mx-auto min-h-screen max-w-2xl px-4 py-6 lg:max-w-6xl">
-      {listings.length ? (
-        <FeedList
-          listings={listings}
-          currentUserId={user.id}
-          postedListingId={searchParams.posted ?? null}
-        />
-      ) : (
-        <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-          <h2 className="font-heading text-xl font-bold text-ink">Start the conversation</h2>
-          <p className="mt-2 leading-6 text-slate-600">
-            There are no listings in your Local Government yet. Be the first neighbour to share something useful.
-          </p>
-          <a
-            href="/new-listing"
-            className="mt-4 inline-block rounded-lg bg-adire px-4 py-3 font-semibold text-white"
-          >
-            Post a listing
-          </a>
-        </section>
-      )}
-    </main>
-  );
+  const { data: profile } = await supabase.from('users').select('state_id,lga_id,ward_id').eq('id', user.id).maybeSingle();
+  if (!profile?.lga_id || !profile.state_id) redirect('/onboarding');
+  const [{ data: lga }, { data: state }, listings] = await Promise.all([
+    supabase.from('lgas').select('name').eq('id', profile.lga_id).maybeSingle(),
+    supabase.from('states').select('name').eq('id', profile.state_id).maybeSingle(),
+    getListingsForScope('nearby'),
+  ]);
+  return <main className="mx-auto min-h-screen max-w-2xl px-4 py-6 lg:max-w-6xl"><FeedList listings={listings} currentUserId={user.id} postedListingId={searchParams.posted ?? null} discovery={{ lgaName: lga?.name ?? 'Local Government', stateName: state?.name ?? 'State', nearbyUsesWard: Boolean(profile.ward_id) }} /></main>;
 }

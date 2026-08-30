@@ -3,6 +3,7 @@ import { ListingPhoto } from '@/components/listing-photo';
 import { TrustRing } from '@/components/feed-list';
 import { WhatsAppShareButton } from '@/components/whatsapp-share-button';
 import { MessageSellerButton } from '@/components/message-seller-button';
+import { DeleteListingButton } from '@/components/delete-listing-button';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { buildWhatsAppListingLink } from '@/lib/whatsapp';
 
@@ -46,7 +47,13 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           </div>
         )}
         {listing.user_id !== user.id && <MessageSellerButton listingId={listing.id} sellerId={listing.user_id} />}
-        {listing.user_id === user.id && <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} className="mt-5" />}
+        {listing.user_id === user.id && (
+          <div className="mt-5">
+            <a href={`/listings/${listing.id}/edit`} className="inline-flex rounded-lg border border-adire px-4 py-3 font-semibold text-adire">Edit listing</a>
+            <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} className="mt-3" />
+            <DeleteListingButton listingId={listing.id} redirectTo="feed" />
+          </div>
+        )}
       </article>
     </main>
   );

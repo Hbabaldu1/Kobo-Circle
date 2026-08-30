@@ -1,11 +1,50 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { listingSchema, listingStatusSchema } from '@/lib/validation';
 
 export type EditListingState = { error?: string; saved?: true };
 export type ListingStatusActionState = { error?: string; updated?: true };
+export type DeleteListingState = { error?: string };
+
+export async function deleteListing(_: DeleteListingState, formData: FormData): Promise<DeleteListingState> {
+  const listingId = formData.get('listingId');
+  const redirectTo = formData.get('redirectTo');
+
+  if (typeof listingId !== 'string') return { error: 'That listing is unavailable.' };
+
+  try {
+    const supabase = createAuthServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'Please sign in before deleting a listing.' };
+
+    const { data, error } = await supabase
+      .from('listings')
+      .delete()
+      .eq('id', listingId)
+      .eq('user_id', user.id)
+      .select('id')
+      .maybeSingle();
+
+    if (error) {
+      console.error('Could not delete listing.', { code: error.code, message: error.message });
+      return { error: 'We could not delete your listing. Please try again.' };
+    }
+
+    if (!data) return { error: 'You can only delete your own listings.' };
+
+    revalidatePath('/feed');
+    revalidatePath('/profile');
+  } catch (err) {
+    console.error('Unexpected error in deleteListing:', err);
+    return { error: 'Something went wrong. Please try again.' };
+  }
+
+  if (redirectTo === 'feed') redirect('/feed');
+  return {};
+}
 
 export async function updateListing(_: EditListingState, formData: FormData): Promise<EditListingState> {
   const listingId = formData.get('listingId');
