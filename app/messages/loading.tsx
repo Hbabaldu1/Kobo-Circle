@@ -1,0 +1,1 @@
+export default function Loading() { return <main className="mx-auto min-h-screen max-w-2xl px-4 py-4"><div className="flex gap-3">{[1,2,3].map(i => <div key={i} className="h-14 w-14 rounded-full skeleton-pulse" />)}</div><div className="mt-8 space-y-3">{[1,2,3,4].map(i => <div key={i} className="h-20 rounded-xl skeleton-pulse" />)}</div></main>; }

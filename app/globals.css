@@ -15,7 +15,7 @@
 body {
   margin: 0;
   min-width: 320px;
-  background: #f6f1e7;
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
@@ -37,16 +37,31 @@ body {
 }
 
 .animate-card-enter {
-  animation: kobo-card-enter 150ms ease-out both;
+  animation: kobo-card-enter 180ms cubic-bezier(.2,.8,.2,1) both;
 }
 
 .animate-success-pop {
-  animation: kobo-success-pop 180ms ease-out both;
+  animation: kobo-success-pop 180ms cubic-bezier(.2,.8,.2,1) both;
 }
 
 .skeleton-pulse {
   animation: kobo-skeleton-pulse 150ms ease-in-out infinite;
 }
+
+.kobo-button-secondary { @apply rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-ink transition-transform duration-150 hover:bg-slate-100 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100; }
+.page-transition { animation: kobo-card-enter 280ms cubic-bezier(.2,.8,.2,1) both; }
+
+html.dark { color-scheme: dark; --ink: #f3ecdf; --paper: #211b1a; --ochre: #e0ae50; --adire: #8fa8dd; --brick: #e37368; --leaf: #76ad88; }
+html.dark .bg-white { background-color: #302827 !important; }
+html.dark .bg-slate-50 { background-color: #282120 !important; }
+html.dark .bg-slate-100 { background-color: #403634 !important; }
+html.dark .bg-paper { background-color: #211b1a !important; }
+html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-ink { color: var(--ink) !important; }
+html.dark .text-slate-700, html.dark .text-slate-600, html.dark .text-slate-500, html.dark .text-slate-400 { color: #c8bdb1 !important; }
+html.dark .border-slate-200, html.dark .border-slate-300, html.dark .border-gray-200 { border-color: #5a4b47 !important; }
+html.dark .bg-\[\#EFE7D6\] { background-color: #403634 !important; }
+html.dark .hover\:bg-slate-100:hover { background-color: #403634 !important; }
+html.dark input, html.dark textarea, html.dark select { color: var(--ink); }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-card-enter,
@@ -54,4 +69,5 @@ body {
   .skeleton-pulse {
     animation: none;
   }
+  .page-transition { animation: none; }
 }

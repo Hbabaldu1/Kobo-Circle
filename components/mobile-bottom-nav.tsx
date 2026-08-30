@@ -181,12 +181,12 @@ export function MobileBottomNav() {
               href={tab.href}
               aria-label={tab.label}
               className={`relative flex min-h-16 items-center justify-center ${
-                active ? 'text-blue-600' : 'text-slate-500'
+                active ? 'text-adire' : 'text-slate-500'
               }`}
             >
               <IconComponent className="h-6 w-6" />
               {tab.href === '/messages' && unreadCount > 0 && (
-                <span className="absolute top-2 ml-5 min-w-4 rounded-full bg-red-500 px-1 text-center text-[10px] leading-4 text-white">
+                <span className="absolute top-2 ml-5 min-w-4 rounded-full bg-brick px-1 text-center text-[10px] leading-4 text-white ring-1 ring-white/60">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}

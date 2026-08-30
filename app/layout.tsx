@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import { AppNavWrapper } from '@/components/app-nav-wrapper';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
+import { cookies } from 'next/headers';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -37,8 +38,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const { data: { user } } = await supabase.auth.getUser();
 
  return (
-    <html lang="en">
+    <html lang="en" className={cookies().get('kobo-theme')?.value === 'dark' ? 'dark' : ''} suppressHydrationWarning>
       <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans`}>
+        <script dangerouslySetInnerHTML={{ __html: "(function(){var t=document.cookie.match(/(?:^|; )kobo-theme=([^;]+)/);var v=t&&t[1];var d=v==='dark'||(!v||v==='system')&&window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d);document.documentElement.style.colorScheme=d?'dark':'light'}())" }} />
         <AppNavWrapper initialAuthenticated={Boolean(user)}>
           {children}
         </AppNavWrapper>

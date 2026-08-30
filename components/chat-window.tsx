@@ -361,7 +361,7 @@ export function ChatWindow({
   const hasText = content.trim().length > 0;
 
   return (
-    <div className="mx-auto flex h-[calc(100dvh-56px)] w-full max-w-4xl flex-col overflow-hidden bg-slate-50 text-slate-900 border-x border-slate-200 md:h-[calc(100vh-65px)]">
+    <div className="mx-auto flex h-[calc(100dvh-56px)] w-full max-w-4xl flex-col overflow-hidden border-x border-slate-200 bg-slate-50 text-slate-900 md:h-[calc(100vh-65px)]">
       
       {/* Scrollable Message Feed */}
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4 overscroll-contain">
@@ -385,7 +385,7 @@ export function ChatWindow({
               new Date(message.created_at).toDateString();
 
           return (
-            <div key={message.id}>
+            <div key={message.id} className={!outgoing ? 'animate-card-enter motion-reduce:animate-none' : ''}>
               {showDate && (
                 <p className="my-4 text-center text-xs font-medium text-slate-400">
                   {dateLabel(message.created_at)}
@@ -403,7 +403,7 @@ export function ChatWindow({
                 <div
                   className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                     outgoing
-                      ? 'rounded-br-none bg-blue-600 text-white'
+                      ? 'rounded-br-none bg-adire text-white'
                       : 'rounded-bl-none border border-slate-200 bg-white text-slate-800 shadow-2xs'
                   }`}
                 >
@@ -425,7 +425,7 @@ export function ChatWindow({
           <button
             type="button"
             aria-label="Attach gallery media"
-            className="rounded-full p-2 text-blue-600 transition-colors hover:bg-slate-100 hover:text-blue-700"
+            className="rounded-full p-2 text-adire transition-colors duration-150 hover:bg-slate-100 motion-reduce:transition-none"
           >
             <ImageIcon className="h-5 w-5" />
           </button>
@@ -434,14 +434,14 @@ export function ChatWindow({
             value={content}
             onChange={(event) => setContent(event.target.value)}
             placeholder="Message"
-            className="flex-1 rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500"
+            className="flex-1 rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-adire focus:bg-white focus:ring-1 focus:ring-adire"
           />
 
           <button
             type="submit"
             disabled={sending}
             aria-label={hasText ? 'Send message' : 'Send like'}
-            className="p-2 text-blue-600 transition-colors hover:text-blue-700 disabled:opacity-40"
+            className="p-2 text-adire transition-colors duration-150 hover:text-adire disabled:opacity-40 motion-reduce:transition-none"
           >
             {hasText ? <Send className="h-5 w-5" /> : <ThumbsUp className="h-5 w-5" />}
           </button>

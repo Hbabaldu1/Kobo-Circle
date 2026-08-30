@@ -39,7 +39,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
 
   // Inbox View
   return (
-    <main className="mx-auto min-h-screen max-w-2xl px-4 py-4 text-slate-900">
+    <main className="page-transition mx-auto min-h-screen max-w-2xl px-4 py-4 text-slate-900">
       <div className="flex gap-4 overflow-x-auto py-2 scrollbar-none">
         {/* <div className="flex flex-col items-center gap-1.5 min-w-[64px]">
           <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-slate-200 text-slate-500 font-semibold text-sm">
@@ -56,7 +56,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
               href={`/messages/${conversation.id}`}
               className="flex flex-col items-center gap-1.5 min-w-[64px] outline-none focus:outline-none"
             >
-              <div className="relative rounded-full ring-2 ring-blue-500 p-0.5">
+              <div className="relative rounded-full ring-2 ring-adire p-0.5">
                 <UserAvatar id={otherId} name={person?.name ?? 'User'} avatarUrl={person?.avatar_url} className="h-14 w-14" />
               </div>
               <span className="text-xs text-slate-700 font-medium truncate w-16 text-center">
@@ -87,9 +87,9 @@ export default async function MessagesPage({ searchParams }: { searchParams: { c
                 <UserAvatar id={otherId} name={person?.name ?? 'User'} avatarUrl={person?.avatar_url} className="h-14 w-14" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-base text-slate-900">{person?.name ?? 'User'}</p>
-                  <p className={`mt-0.5 truncate text-sm ${unread ? 'font-bold text-blue-600' : 'text-slate-500'}`}>{preview}</p>
+                  <p className={`mt-0.5 truncate text-sm ${unread ? 'font-bold text-adire' : 'text-slate-500'}`}>{preview}</p>
                 </div>
-                {unread && <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />}
+                {unread && <span className="h-2.5 w-2.5 rounded-full bg-adire" />}
               </Link>
             );
           })
