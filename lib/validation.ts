@@ -10,6 +10,12 @@ export const userProfileSchema = z.object({
   phone: z.string().max(20).optional(),
 });
 
+/** Profile edits deliberately accept only a phone number. Location and identity
+ * are established during onboarding and must never be writable from this action. */
+export const phoneProfileSchema = z.object({
+  phone: z.string().trim().max(20).optional(),
+});
+
 export const onboardingProfileSchema = userProfileSchema.extend({
   lgaId: z.string().uuid(),
 });
