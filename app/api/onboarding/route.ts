@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Select state_id from lgas (skipping legacy columns to pass build checks)
+    // The client submits only an LGA ID. Its state is always resolved here.
     const { data: lga, error: lgaError } = await supabase
       .from('lgas')
       .select('state_id')
@@ -78,12 +78,17 @@ export async function POST(request: Request) {
       );
     }
 
+    let location = {
+      state_id: lga.state_id,
+      lga_id: parsed.data.lgaId,
+      ward_id: null as string | null,
+    };
+
     if (parsed.data.wardId) {
       const { data: ward, error: wardError } = await supabase
         .from('wards')
-        .select('id')
+        .select('id, lga_id, state_id')
         .eq('id', parsed.data.wardId)
-        .eq('lga_id', parsed.data.lgaId)
         .maybeSingle();
 
       if (wardError) {
@@ -93,23 +98,24 @@ export async function POST(request: Request) {
           { status: 500 }
         );
       }
-      if (!ward) {
+      if (!ward || ward.state_id !== lga.state_id || ward.lga_id !== parsed.data.lgaId) {
         return NextResponse.json(
           { error: 'Selected ward is invalid for this Local Government.' },
           { status: 400 }
         );
       }
+
+      // A ward is the authoritative source for its LGA; never compose this
+      // pair from independent client values.
+      location = { state_id: ward.state_id, lga_id: ward.lga_id, ward_id: ward.id };
     }
 
-    // Insert new location hierarchy with type cast
     const insertData: Record<string, unknown> = {
       id: user.id,
       name: parsed.data.name,
       email: user.email,
       phone: parsed.data.phone,
-      ward_id: parsed.data.wardId ?? null,
-      lga_id: parsed.data.lgaId,
-      state_id: lga.state_id,
+      ...location,
     };
 
     const { error: insertError } = await supabase
@@ -117,6 +123,13 @@ export async function POST(request: Request) {
       .insert(insertData as any);
 
     if (insertError) {
+      if (insertError.code === '23503') {
+        return NextResponse.json(
+          { error: "That location combination isn't valid — please reselect your Ward." },
+          { status: 400 }
+        );
+      }
+
       if (insertError.code === '23505') {
         const { data: existingProfile } = await supabase
           .from('users')

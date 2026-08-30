@@ -1,6 +1,6 @@
 # Kobo Circle
 
-Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for residential estates. Neighbours can sign up, complete estate onboarding, post listings, vouch for sellers, and contact trusted sellers through WhatsApp.
+Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for local areas. Neighbours can sign up, complete location onboarding, post listings, vouch for sellers, and contact trusted sellers through WhatsApp.
 
 ## Prerequisites
 
@@ -43,7 +43,7 @@ Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for residential est
    supabase db execute --linked --file supabase/seed.sql
    ```
 
-   This creates **Golden Estate, Lekki** plus four streets. The script is idempotent. For a local Supabase database, `supabase db reset` reapplies migrations and automatically runs `supabase/seed.sql`.
+   This creates **Jigawa, Birnin Kudu** plus sample wards. The script is idempotent. For a local Supabase database, `supabase db reset` reapplies migrations and automatically runs `supabase/seed.sql`.
 
 5. Start the development server:
 

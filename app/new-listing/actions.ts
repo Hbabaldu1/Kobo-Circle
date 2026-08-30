@@ -36,7 +36,9 @@ export async function createListing(
 
     const { data: profile, error: profileError } = await supabase
       .from('users')
-      .select('state_id, lga_id')
+      // Use the user's already-validated location tuple as-is. Rebuilding it
+      // from form data or separate location lookups could violate composite FKs.
+      .select('state_id, lga_id, ward_id')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -53,12 +55,16 @@ export async function createListing(
         user_id: user.id,
         state_id: profile.state_id,
         lga_id: profile.lga_id,
+        ward_id: profile.ward_id,
         ...parsed.data,
       })
       .select('id')
       .single();
 
     if (error) {
+      if (error.code === '23503') {
+        return { error: "That location combination isn't valid — please reselect your Ward." };
+      }
       if (error.message.includes('Rate limit exceeded: max 5 listings per 24 hours')) {
         return { error: "You've hit today's posting limit — try again tomorrow" };
       }
