@@ -30,7 +30,7 @@ export function ChatHeader({ name, avatarUrl, profileId, phone }: ChatHeaderProp
         <a
           href={`tel:${phone}`}
           aria-label="Call user"
-          className="rounded-full p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+          className="rounded-full p-2 text-slate-600 transition-colors duration-150 hover:bg-slate-100 hover:text-slate-900 motion-reduce:transition-none"
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.828-1.587-5.112-3.871-6.7-6.7l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />

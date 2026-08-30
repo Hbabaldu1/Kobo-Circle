@@ -86,7 +86,7 @@ export function AppNavWrapper({ children, initialAuthenticated = false }: AppNav
   return (
     <>
       <TopNav />
-      <div className={isDirectChat ? 'h-[calc(100dvh-64px)] overflow-hidden' : 'pb-20 md:pb-0'}>
+      <div className={isDirectChat ? 'h-[calc(100dvh-64px)] overflow-hidden' : 'page-transition pb-20 md:pb-0'}>
         {children}
       </div>
       <MobileBottomNav />

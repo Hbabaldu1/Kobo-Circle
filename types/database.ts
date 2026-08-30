@@ -30,6 +30,7 @@ export interface Database {
       conversations: { Row: { id: string; participant_one: string; participant_two: string; listing_id: string | null; created_at: string; updated_at: string }; Insert: { id?: string; participant_one: string; participant_two: string; listing_id?: string | null; created_at?: string; updated_at?: string }; Update: Partial<{ updated_at: string }>; Relationships: [] };
       messages: { Row: { id: string; conversation_id: string; sender_id: string; content: string; read_at: string | null; created_at: string }; Insert: { id?: string; conversation_id: string; sender_id: string; content: string; read_at?: string | null; created_at?: string }; Update: Partial<{ read_at: string }>; Relationships: [] };
       vouches: { Row: { id: string; voucher_id: string; vouched_for_id: string; note: string | null; created_at: string }; Insert: { id?: string; voucher_id: string; vouched_for_id: string; note?: string | null; created_at?: string }; Update: never; Relationships: [] };
+      phone_update_attempts: { Row: { id: string; user_id: string; attempted_at: string }; Insert: { id?: string; user_id: string; attempted_at?: string }; Update: never; Relationships: [] };
     };
     Views: { seller_trust: { Row: { user_id: string; vouch_count: number; trust_ratio: number }; Insert: never; Update: never; Relationships: [] } };
     Functions: Record<string, never>;
