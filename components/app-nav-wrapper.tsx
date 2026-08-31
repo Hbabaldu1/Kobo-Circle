@@ -54,6 +54,7 @@ import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import { TopNav } from '@/components/top-nav';
+import { NotificationCenter } from '@/components/notification-center';
 
 const publicRoutes = ['/', '/login', '/signup', '/check-email', '/onboarding', '/auth'];
 
@@ -86,6 +87,7 @@ export function AppNavWrapper({ children, initialAuthenticated = false }: AppNav
   return (
     <>
       <TopNav />
+      <NotificationCenter />
       <div className={isDirectChat ? 'h-[100dvh] overflow-hidden md:h-[calc(100dvh-64px)]' : 'page-transition pb-20 md:pb-0'}>
         {children}
       </div>

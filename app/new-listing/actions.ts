@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { listingSchema } from '@/lib/validation';
+import { sendPushToUser } from '@/lib/push';
 
 export type ListingActionState = { error?: string; listingId?: string };
 
@@ -73,6 +74,9 @@ export async function createListing(
     }
 
     revalidatePath('/feed');
+    const { data: neighbours } = await supabase.from('users').select('id, ward_id').eq('lga_id', profile.lga_id).neq('id', user.id);
+    const recipients = (neighbours ?? []).filter((neighbour) => !profile.ward_id || neighbour.ward_id === profile.ward_id);
+    void Promise.all(recipients.map((neighbour) => sendPushToUser(neighbour.id, 'listing', '/feed')));
     return { listingId: data.id };
   } catch (err) {
     console.error('Unexpected error in createListing:', err);

@@ -4,6 +4,7 @@ import { TrustRing } from '@/components/feed-list';
 import { WhatsAppShareButton } from '@/components/whatsapp-share-button';
 import { MessageSellerButton } from '@/components/message-seller-button';
 import { DeleteListingButton } from '@/components/delete-listing-button';
+import { Pencil } from 'lucide-react';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { buildWhatsAppListingLink } from '@/lib/whatsapp';
 
@@ -26,7 +27,8 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   return (
     <main className="mx-auto min-h-screen max-w-lg px-5 py-10">
       <a href="/feed" className="text-sm font-semibold text-adire">← Back to feed</a>
-      <article className="mt-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <article className="relative mt-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        {listing.user_id === user.id && <div className="absolute right-4 top-4 z-10 flex items-center gap-2 rounded-lg bg-white/95 p-1 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900/95"><a href={`/listings/${listing.id}/edit`} aria-label="Edit listing" title="Edit listing" className="rounded-md p-2 text-adire transition-colors hover:bg-slate-100"><Pencil className="h-4 w-4" /></a><DeleteListingButton listingId={listing.id} redirectTo="feed" compact /></div>}
         <ListingPhoto photoUrl={listing.photo_url} type={listing.type} title={listing.title} />
         <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-brick">{typeLabel}</p>
         <h1 className="mt-2 font-heading text-3xl font-bold text-ink">{listing.title}</h1>
@@ -47,13 +49,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           </div>
         )}
         {listing.user_id !== user.id && <MessageSellerButton listingId={listing.id} sellerId={listing.user_id} />}
-        {listing.user_id === user.id && (
-          <div className="mt-5">
-            <a href={`/listings/${listing.id}/edit`} className="inline-flex rounded-lg border border-adire px-4 py-3 font-semibold text-adire">Edit listing</a>
-            <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} className="mt-3" />
-            <DeleteListingButton listingId={listing.id} redirectTo="feed" />
-          </div>
-        )}
+        <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} className="mt-5" />
       </article>
     </main>
   );
