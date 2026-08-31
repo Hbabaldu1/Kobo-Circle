@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Bell, Home, MessageSquare, Plus, Search } from 'lucide-react';
+import { Bell, Home, MessageSquare, Plus, Search, Users } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { UserAvatar } from '@/components/user-avatar';
 
@@ -51,7 +51,7 @@ export function TopNav() {
   return (
     <header className="sticky top-0 z-40 hidden items-center justify-between border-b border-gray-200 bg-white px-6 py-2 shadow-sm md:flex">
       <div className="flex min-w-0 items-center gap-5">
-        <Link href="/feed" className="font-heading text-xl font-bold text-adire">Kobo Circle</Link>
+        <Link href="/directory" aria-label="Community directory" className="rounded-full p-2 text-slate-600 hover:bg-slate-100"><Users className="h-5 w-5" /></Link><Link href="/feed" className="font-heading text-xl font-bold text-adire">Kobo Circle</Link>
         <label className="relative">
           <span className="sr-only">Search listings</span>
           <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />

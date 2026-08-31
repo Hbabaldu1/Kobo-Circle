@@ -15,6 +15,7 @@
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
@@ -45,7 +46,7 @@ body {
 }
 
 .skeleton-pulse {
-  animation: kobo-skeleton-pulse 150ms ease-in-out infinite;
+  animation: kobo-skeleton-pulse 2.8s ease-in-out infinite;
 }
 
 .kobo-button-secondary { @apply rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-ink transition-transform duration-150 hover:bg-slate-100 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100; }
@@ -62,6 +63,7 @@ html.dark .border-slate-200, html.dark .border-slate-300, html.dark .border-gray
 html.dark .bg-\[\#EFE7D6\] { background-color: #403634 !important; }
 html.dark .hover\:bg-slate-100:hover { background-color: #403634 !important; }
 html.dark input, html.dark textarea, html.dark select { color: var(--ink); }
+input, select, textarea { font-size: max(1rem, 16px); }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-card-enter,

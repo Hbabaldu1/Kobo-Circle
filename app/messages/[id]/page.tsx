@@ -34,19 +34,17 @@ export default async function ConversationPage({ params }: { params: { id: strin
   if (!counterparty) notFound();
 
   return (
-    <main className="overflow-hidden bg-transparent text-slate-900">
+    <main className="mx-auto flex h-full max-w-4xl flex-col overflow-hidden border-x border-slate-200 bg-transparent text-slate-900">
       <ChatHeader
         name={counterparty.name}
         avatarUrl={counterparty.avatar_url}
         profileId={counterparty.id}
-        listingId={listing?.id}
       />
       <ChatWindow
         conversationId={conversation.id}
         currentUserId={user.id}
         initialMessages={(messages ?? []) as Message[]}
         counterparty={{ id: counterparty.id, name: counterparty.name, avatarUrl: counterparty.avatar_url }}
-        listing={listing ? { id: listing.id, title: listing.title } : undefined}
       />
     </main>
   );
