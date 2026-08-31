@@ -54,6 +54,7 @@ export function ChatWindow({ conversationId, currentUserId, initialMessages, cou
       const { data, error } = await supabase.from('messages').insert({ conversation_id: conversationId, sender_id: currentUserId, content: text }).select().single();
       if (error) throw error;
       if (data) setMessages((current) => current.some((message) => message.id === data.id) ? current : [...current, data]);
+      if (data) void fetch('/api/push/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ conversationId, recipientId: counterparty.id }) });
       if (!textToSend) setContent('');
     } catch (error) { console.error('Could not send message:', error); } finally { setSending(false); }
   }

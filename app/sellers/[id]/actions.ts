@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
+import { sendPushToUser } from '@/lib/push';
 
 export type VouchActionState = { error?: string; vouched?: true };
 export async function createVouch(_: VouchActionState, formData: FormData): Promise<VouchActionState> {
@@ -24,6 +25,7 @@ export async function createVouch(_: VouchActionState, formData: FormData): Prom
     }
     revalidatePath(`/sellers/${sellerId}`);
     revalidatePath('/feed');
+    void sendPushToUser(sellerId, 'vouch');
     return { vouched: true };
   } catch (err) {
     console.error('Unexpected error in createVouch:', err);

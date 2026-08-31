@@ -7,6 +7,16 @@ import { phoneProfileSchema } from '@/lib/validation';
 
 export type ProfileActionState = { error?: string; saved?: true };
 
+export async function updateNotificationPreferences(preferences: { vouch_enabled: boolean; message_enabled: boolean; listing_enabled: boolean }) {
+  const supabase = createAuthServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: 'Please sign in before changing notification preferences.' };
+  const { error } = await supabase.from('notification_preferences').upsert({ user_id: user.id, ...preferences, updated_at: new Date().toISOString() });
+  if (error) { console.error('Could not save notification preferences:', error.message); return { error: 'We could not save notification preferences.' }; }
+  revalidatePath('/profile');
+  return {};
+}
+
 export async function updateAvatarUrl(avatarUrl: string): Promise<{ error?: string }> {
   try {
     const supabase = createAuthServerClient();

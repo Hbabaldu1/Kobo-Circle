@@ -34,7 +34,7 @@ export default async function ConversationPage({ params }: { params: { id: strin
   if (!counterparty) notFound();
 
   return (
-    <main className="mx-auto flex h-full max-w-4xl flex-col overflow-hidden border-x border-slate-200 bg-transparent text-slate-900">
+    <main className="mx-auto flex h-full min-h-0 max-w-4xl flex-col overflow-hidden border-x border-slate-200 bg-transparent text-slate-900">
       <ChatHeader
         name={counterparty.name}
         avatarUrl={counterparty.avatar_url}

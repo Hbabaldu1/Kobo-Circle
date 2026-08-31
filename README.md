@@ -28,6 +28,8 @@ Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for local areas. Ne
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-public-anon-key
    SUPABASE_SERVICE_ROLE_KEY=your-server-only-service-role-key
+   NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-client-visible-vapid-public-key
+   VAPID_PRIVATE_KEY=your-server-only-vapid-private-key
    ```
 
 4. Link the repository to the correct Supabase project, then apply the migration:
@@ -50,6 +52,16 @@ Kobo Circle is a low-bandwidth-first, hyperlocal marketplace for local areas. Ne
    ```bash
    npm run dev
    ```
+
+## Push notifications
+
+Generate VAPID keys once, then add the public key to the client environment and the private key only to the server environment:
+
+```bash
+npx web-push generate-vapid-keys
+```
+
+Apply the migrations before enabling notifications. Web Push uses the browser/OS default notification sound; browsers do not permit custom sounds in a service worker. iOS Safari support remains limited and can vary by OS version and installation state, even with a correct implementation.
 
 
 ## Security and performance baseline
