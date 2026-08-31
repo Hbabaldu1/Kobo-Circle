@@ -10,7 +10,7 @@ export default async function SellerPage({ params }: { params: { id: string } })
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
   // RLS on users limits this profile query to the viewer's LGA.
-  const { data: seller } = await supabase.from('users').select('id, name, phone, avatar_url, ward_id').eq('id', params.id).maybeSingle();
+  const { data: seller } = await supabase.from('users').select('id, name, phone, avatar_url, ward_id, created_at').eq('id', params.id).maybeSingle();
   if (!seller) notFound();
   const [{ data: ward }, { data: trust }, { data: notes }, { data: latestListing }] = await Promise.all([
     seller.ward_id ? supabase.from('wards').select('name, lga_id').eq('id', seller.ward_id).maybeSingle() : Promise.resolve({ data: null }),
@@ -45,5 +45,5 @@ export default async function SellerPage({ params }: { params: { id: string } })
     };
   });
 
-  return <SellerProfile sellerId={seller.id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} wardLgaName={ward ? `${ward.name}, ${lga?.name ?? 'Local Government'}` : 'Local neighbour'} initialVouchCount={trust?.vouch_count ?? 0} initialTrustRatio={trust?.trust_ratio ?? 0} phone={seller.phone} listingTitle={latestListing?.title ?? undefined} notes={vouchNotes} isOwner={seller.id === user.id} />;
+  return <SellerProfile sellerId={seller.id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} wardLgaName={ward ? `${ward.name}, ${lga?.name ?? 'Local Government'}` : 'Local neighbour'} initialVouchCount={trust?.vouch_count ?? 0} initialTrustRatio={trust?.trust_ratio ?? 0} phone={seller.phone} listingTitle={latestListing?.title ?? undefined} notes={vouchNotes} isOwner={seller.id === user.id} memberSince={seller.created_at} />;
 }

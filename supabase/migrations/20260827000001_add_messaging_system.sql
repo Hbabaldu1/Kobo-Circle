@@ -8,8 +8,8 @@ create table if not exists public.conversations (
   constraint conversations_distinct_participants check (participant_one <> participant_two)
 );
 
-create unique index if not exists conversations_participants_listing_key
-  on public.conversations (participant_one, participant_two, listing_id);
+create unique index if not exists conversations_participants_key
+  on public.conversations (participant_one, participant_two);
 create index if not exists idx_conversations_participant_one on public.conversations (participant_one, updated_at desc);
 create index if not exists idx_conversations_participant_two on public.conversations (participant_two, updated_at desc);
 

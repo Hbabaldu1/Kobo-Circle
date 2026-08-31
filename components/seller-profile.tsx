@@ -6,6 +6,7 @@ import { UserAvatar } from '@/components/user-avatar';
 import { VouchButton } from '@/components/vouch-button';
 import { buildWhatsAppListingLink } from '@/lib/whatsapp';
 import { logout } from '@/app/logout/actions';
+import { MessageSellerButton } from '@/components/message-seller-button';
 
 function LogoutButton() {
   return (
@@ -32,6 +33,7 @@ export function SellerProfile({
   avatarUrl,
   listingTitle,
   currentUserId,
+  memberSince,
 }: {
   sellerId: string;
   name: string;
@@ -44,6 +46,7 @@ export function SellerProfile({
   notes: Array<{ id: string; note: string | null; created_at: string; voucherId: string; voucherName?: string; voucherAvatarUrl?: string }>;
   isOwner: boolean;
   currentUserId?: string;
+  memberSince: string;
 }) {
   const [vouchCount, setVouchCount] = useState(initialVouchCount);
   const [trustRatio, setTrustRatio] = useState(initialTrustRatio);
@@ -58,6 +61,7 @@ export function SellerProfile({
 
   const percentage = trustRatio * 100;
   const whatsappLink = listingTitle ? buildWhatsAppListingLink(phone, listingTitle) : null;
+  const memberSinceLabel = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(new Date(memberSince));
 
   return (
     <main className="mx-auto min-h-screen max-w-lg px-5 py-10">
@@ -79,7 +83,8 @@ export function SellerProfile({
             {Math.round(percentage)}%
           </span>
         </div>
-        <p className="mt-4 text-sm text-slate-600">
+        <p className="mt-4 inline-flex rounded-full bg-paper px-3 py-1 text-sm font-semibold text-ink">Member since {memberSinceLabel}</p>
+        <p className="mt-3 text-sm text-slate-600">
           {vouchCount} {vouchCount === 1 ? 'vouch' : 'vouches'} from neighbours
         </p>
         {whatsappLink ? (
@@ -96,7 +101,7 @@ export function SellerProfile({
             This neighbour hasn&apos;t shared a phone number yet
           </p>
         )}
-        {!isOwner && <VouchButton sellerId={sellerId} onVouched={handleVouched} />}
+        {!isOwner && <><MessageSellerButton sellerId={sellerId} /><VouchButton sellerId={sellerId} onVouched={handleVouched} /></>}
       </section>
 
       <section className="mt-6">
