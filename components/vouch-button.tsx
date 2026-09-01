@@ -9,13 +9,13 @@ const vouchTypes = [
   { value: 'transaction', label: 'Transaction', description: 'You have completed a transaction with them.' },
 ] as const;
 
-export function VouchButton({ sellerId, onVouched }: { sellerId: string; onVouched: () => void }) {
+export function VouchButton({ sellerId, onVouched }: { sellerId: string; onVouched: (type: (typeof vouchTypes)[number]['value']) => void }) {
   const [state, action] = useFormState(createVouch, initialState);
   const [vouchType, setVouchType] = useState<(typeof vouchTypes)[number]['value']>('community');
 
   useEffect(() => {
-    if (state.vouched) onVouched();
-  }, [onVouched, state.vouched]);
+    if (state.vouched) onVouched(vouchType);
+  }, [onVouched, state.vouched, vouchType]);
 
   return <form action={action} className="mt-5">
     <input type="hidden" name="sellerId" value={sellerId} />
