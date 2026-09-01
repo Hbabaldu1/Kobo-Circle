@@ -16,24 +16,33 @@ export async function getOrCreateConversation(sellerId: string, listingId?: stri
       .eq('participant_one', participantOne).eq('participant_two', participantTwo).maybeSingle();
     if (lookupError) throw lookupError;
 
+    const { data: listing, error: listingError } = listingId
+      ? await supabase.from('listings').select('id, title').eq('id', listingId).maybeSingle()
+      : { data: null, error: null };
+    if (listingError) throw listingError;
+
     let conversationId = existing?.id;
     if (!conversationId) {
       const { data: conversation, error } = await supabase.from('conversations')
         .insert({ participant_one: participantOne, participant_two: participantTwo, listing_id: listingId ?? null }).select('id').single();
       if (error || !conversation) throw error ?? new Error('Conversation was not created.');
       conversationId = conversation.id;
-    } else if (listingId && existing?.listing_id !== listingId) {
-      const { data: listing, error: listingError } = await supabase.from('listings').select('title').eq('id', listingId).maybeSingle();
-      if (listingError) throw listingError;
-      if (listing) {
-        const context = `[[listing-context:${listing.title}]]`;
-        const { data: previous, error: messageError } = await supabase.from('messages').select('content')
-          .eq('conversation_id', conversationId).order('created_at', { ascending: false }).limit(1).maybeSingle();
-        if (messageError) throw messageError;
-        if (previous?.content !== context) {
-          const { error } = await supabase.from('messages').insert({ conversation_id: conversationId, sender_id: user.id, content: context });
-          if (error) throw error;
-        }
+    }
+
+    if (listing && (!existing || existing.listing_id !== listing.id)) {
+      const { data: previous, error: messageError } = await supabase.from('messages')
+        .select('message_type, reference_listing_id')
+        .eq('conversation_id', conversationId).order('created_at', { ascending: false }).limit(1).maybeSingle();
+      if (messageError) throw messageError;
+      if (previous?.message_type !== 'listing_reference' || previous.reference_listing_id !== listing.id) {
+        const { error } = await supabase.from('messages').insert({
+          conversation_id: conversationId,
+          sender_id: user.id,
+          content: `Shared listing: ${listing.title}`,
+          message_type: 'listing_reference',
+          reference_listing_id: listing.id,
+        });
+        if (error) throw error;
       }
     }
     redirect(`/messages/${conversationId}`);
