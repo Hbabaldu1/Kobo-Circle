@@ -34,7 +34,7 @@ export interface Database {
       notification_preferences: { Row: { user_id: string; vouch_enabled: boolean; message_enabled: boolean; listing_enabled: boolean; created_at: string; updated_at: string }; Insert: { user_id: string; vouch_enabled?: boolean; message_enabled?: boolean; listing_enabled?: boolean; created_at?: string; updated_at?: string }; Update: Partial<{ vouch_enabled: boolean; message_enabled: boolean; listing_enabled: boolean; updated_at: string }>; Relationships: [] };
       push_subscriptions: { Row: { id: string; user_id: string; endpoint: string; keys: { p256dh: string; auth: string }; created_at: string }; Insert: { id?: string; user_id: string; endpoint: string; keys: { p256dh: string; auth: string }; created_at?: string }; Update: never; Relationships: [] };
     };
-    Views: { seller_trust: { Row: { user_id: string; vouch_count: number; trust_ratio: number }; Insert: never; Update: never; Relationships: [] } };
+    Views: { seller_trust: { Row: { user_id: string; community_vouch_count: number; tenure_vouch_count: number; transaction_vouch_count: number; weighted_score: number; trust_ratio: number }; Insert: never; Update: never; Relationships: [] } };
     Functions: Record<string, never>;
   };
 }

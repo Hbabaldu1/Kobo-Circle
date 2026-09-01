@@ -25,7 +25,7 @@ export function SellerProfile({
   sellerId,
   name,
   wardLgaName,
-  initialVouchCount,
+  initialVouchCounts,
   initialTrustRatio,
   notes,
   isOwner,
@@ -38,7 +38,7 @@ export function SellerProfile({
   sellerId: string;
   name: string;
   wardLgaName: string;
-  initialVouchCount: number;
+  initialVouchCounts: { community: number; tenure: number; transaction: number };
   initialTrustRatio: number;
   phone: string | null;
   avatarUrl?: string;
@@ -48,18 +48,20 @@ export function SellerProfile({
   currentUserId?: string;
   memberSince: string;
 }) {
-  const [vouchCount, setVouchCount] = useState(initialVouchCount);
+  const [vouchCounts, setVouchCounts] = useState(initialVouchCounts);
   const [trustRatio, setTrustRatio] = useState(initialTrustRatio);
   const [justVouched, setJustVouched] = useState(false);
 
-  const handleVouched = useCallback(() => {
-    setVouchCount((count) => count + 1);
-    setTrustRatio((ratio) => Math.min(ratio + 1 / 12, 1));
+  const handleVouched = useCallback((type: keyof typeof vouchCounts) => {
+    setVouchCounts((counts) => ({ ...counts, [type]: counts[type] + 1 }));
+    const weight = type === 'community' ? 1 : type === 'tenure' ? 2 : 3;
+    setTrustRatio((ratio) => Math.min(ratio + weight / 24, 1));
     setJustVouched(true);
     window.setTimeout(() => setJustVouched(false), 180);
   }, []);
 
   const percentage = trustRatio * 100;
+  const vouchCount = vouchCounts.community + vouchCounts.tenure + vouchCounts.transaction;
   const whatsappLink = listingTitle ? buildWhatsAppListingLink(phone, listingTitle) : null;
   const memberSinceLabel = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(new Date(memberSince));
 
@@ -87,6 +89,11 @@ export function SellerProfile({
         <p className="mt-3 text-sm text-slate-600">
           {vouchCount} {vouchCount === 1 ? 'vouch' : 'vouches'} from neighbours
         </p>
+        <dl className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
+          <div className="rounded-lg bg-paper p-2"><dt className="text-slate-500">Community</dt><dd className="mt-1 font-bold text-ink">{vouchCounts.community}</dd></div>
+          <div className="rounded-lg bg-paper p-2"><dt className="text-slate-500">Tenure</dt><dd className="mt-1 font-bold text-ink">{vouchCounts.tenure}</dd></div>
+          <div className="rounded-lg bg-paper p-2"><dt className="text-slate-500">Transaction</dt><dd className="mt-1 font-bold text-ink">{vouchCounts.transaction}</dd></div>
+        </dl>
         {whatsappLink ? (
           <a
             href={whatsappLink}

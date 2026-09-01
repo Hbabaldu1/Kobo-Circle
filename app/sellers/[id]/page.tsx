@@ -14,7 +14,7 @@ export default async function SellerPage({ params }: { params: { id: string } })
   if (!seller) notFound();
   const [{ data: ward }, { data: trust }, { data: notes }, { data: latestListing }] = await Promise.all([
     seller.ward_id ? supabase.from('wards').select('name, lga_id').eq('id', seller.ward_id).maybeSingle() : Promise.resolve({ data: null }),
-    supabase.from('seller_trust').select('vouch_count, trust_ratio').eq('user_id', seller.id).maybeSingle(),
+    supabase.from('seller_trust').select('community_vouch_count, tenure_vouch_count, transaction_vouch_count, trust_ratio').eq('user_id', seller.id).maybeSingle(),
     supabase.from('vouches').select('id, voucher_id, note, created_at').eq('vouched_for_id', seller.id).order('created_at', { ascending: false }),
     supabase.from('listings').select('title').eq('user_id', seller.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
   ]);
@@ -45,5 +45,5 @@ export default async function SellerPage({ params }: { params: { id: string } })
     };
   });
 
-  return <SellerProfile sellerId={seller.id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} wardLgaName={ward ? `${ward.name}, ${lga?.name ?? 'Local Government'}` : 'Local neighbour'} initialVouchCount={trust?.vouch_count ?? 0} initialTrustRatio={trust?.trust_ratio ?? 0} phone={seller.phone} listingTitle={latestListing?.title ?? undefined} notes={vouchNotes} isOwner={seller.id === user.id} memberSince={seller.created_at} />;
+  return <SellerProfile sellerId={seller.id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} wardLgaName={ward ? `${ward.name}, ${lga?.name ?? 'Local Government'}` : 'Local neighbour'} initialVouchCounts={{ community: Number(trust?.community_vouch_count ?? 0), tenure: Number(trust?.tenure_vouch_count ?? 0), transaction: Number(trust?.transaction_vouch_count ?? 0) }} initialTrustRatio={Number(trust?.trust_ratio ?? 0)} phone={seller.phone} listingTitle={latestListing?.title ?? undefined} notes={vouchNotes} isOwner={seller.id === user.id} memberSince={seller.created_at} />;
 }
