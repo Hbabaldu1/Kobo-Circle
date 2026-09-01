@@ -3,6 +3,7 @@ import { ListingPhoto } from '@/components/listing-photo';
 import { TrustRing } from '@/components/feed-list';
 import { WhatsAppShareButton } from '@/components/whatsapp-share-button';
 import { MessageSellerButton } from '@/components/message-seller-button';
+import { listingPriceLabel } from '@/lib/listing-price';
 import { ListingOwnerActions } from '@/components/listing-owner-actions';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { buildWhatsAppListingLink } from '@/lib/whatsapp';
@@ -35,7 +36,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
         <ListingPhoto photoUrl={listing.photo_url} type={listing.type} title={listing.title} />
         <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-brick">{typeLabel}</p>
         <h1 className="mt-2 font-heading text-3xl font-bold text-ink">{listing.title}</h1>
-        <p className="mt-2 text-lg font-semibold text-adire">{listing.type === 'request' || !listing.price ? 'Looking to buy' : listing.price}</p>
+        <p className="mt-2 text-lg font-semibold text-adire">{listingPriceLabel(listing.type, listing.price)}</p>
         {listing.description && <p className="mt-5 whitespace-pre-wrap leading-7 text-slate-700">{listing.description}</p>}
         <div className="mt-6 flex items-center gap-3 border-t border-[#EFE7D6] pt-4">
           <TrustRing id={listing.user_id} name={seller.name} avatarUrl={seller.avatar_url ?? undefined} percentage={trustPercentage} />
@@ -53,7 +54,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           </div>
         )}
         {listing.user_id !== user.id && <MessageSellerButton listingId={listing.id} sellerId={listing.user_id} />}
-        <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} className="mt-5" />
+        <WhatsAppShareButton id={listing.id} title={listing.title} price={listing.price} type={listing.type} className="mt-5" />
       </article>
     </main>
   );
