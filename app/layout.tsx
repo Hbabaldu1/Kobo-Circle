@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import { AppNavWrapper } from '@/components/app-nav-wrapper';
+import { NativeShellUpdate } from '@/components/native-shell-update';
 import { createAuthServerClient } from '@/lib/supabase/auth-server';
 import { cookies } from 'next/headers';
 import './globals.css';
@@ -43,6 +44,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <script dangerouslySetInnerHTML={{ __html: "(function(){var t=document.cookie.match(/(?:^|; )kobo-theme=([^;]+)/);var v=t&&t[1];var d=v==='dark'||(!v||v==='system')&&window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d);document.documentElement.style.colorScheme=d?'dark':'light'}())" }} />
         <AppNavWrapper initialAuthenticated={Boolean(user)}>
           {children}
+          <NativeShellUpdate />
         </AppNavWrapper>
       </body>
     </html>

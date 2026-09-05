@@ -85,3 +85,28 @@ Before then, the wrapper may only be used for a clearly labelled internal sandbo
 - Shared Zod schemas validate user and listing input at the appropriate client and server boundaries. User text is rendered through React's escaped JSX text nodes.
 - Profile and listing images use `next/image`; image optimization is disabled intentionally so the app can be bundled for a WebView/Capacitor target without requiring a Next.js image server.
 - `public/manifest.json` and iOS metadata make the app installable as a standalone PWA.
+
+## Android debug APK (Capacitor)
+
+The Android app is a small Capacitor shell for the live production site. Its native entry URL is `https://kobo-circle.vercel.app/login`; the browser site is unchanged and still opens at `/`. Middleware permits unauthenticated `/login` requests and redirects an authenticated, onboarded user from `/login` to `/feed`.
+
+### Build from a clean checkout
+
+1. Install Node.js 20+ and the Android SDK/Build Tools (Android Studio is the easiest supported installer, but **is not required** once the SDK command-line tools and `ANDROID_HOME` are configured). Java 21 is required by this generated Capacitor Android project.
+2. Run `npm install`.
+3. Run `npm run generate:assets` once to generate the ignored Android PNG icon densities and splash screens from `public/icons/icon-512.svg`. The script is equivalent to `mkdir -p assets && cp public/icons/icon-512.svg assets/logo.svg && npx capacitor-assets generate --android --iconBackgroundColor '#2F4B7C' --splashBackgroundColor '#1B1F3B'`; do not commit its generated binaries.
+4. Run `npx cap sync android`. (The shell loads the production URL, so it does not package Next.js output.) The Gradle wrapper JAR is intentionally ignored: with a locally installed Gradle, run `cd android && gradle wrapper` to regenerate it after pulling; recreating the platform with `npx cap add android` also generates it. Do not commit the JAR.
+5. Run `cd android && ./gradlew assembleDebug`.
+6. The installable debug APK is `android/app/build/outputs/apk/debug/app-debug.apk`. Install it with `adb install -r android/app/build/outputs/apk/debug/app-debug.apk` (USB debugging enabled), or transfer that file to the device and open it.
+
+`assembleDebug` uses the standard Android debug key and does not create a Play Store or release-signed artifact. A physical Android device or emulator is needed to test installation and deep links; neither is required just to compile the APK.
+
+### Native-shell update policy
+
+`public/update-manifest.json` is public and is updated **only** for an actual APK/native-shell release. Native launches compare its version with that manifest and show a dismissible link that opens the APK download in the system browser; the app never downloads or installs an APK itself and does not request `REQUEST_INSTALL_PACKAGES`.
+
+This is intentionally only a **native shell** update check (permissions, Capacitor plugins, or icon/branding changes). Normal web-app feature deployments need no APK update or native version bump because the WebView always loads the live Kobo Circle production site.
+
+### Production deep links
+
+The app registers `https://kobo-circle.vercel.app/...` links. Before publishing a signed APK, replace `public/.well-known/assetlinks.json` with an Android Digital Asset Links statement containing `app.kobocircle.android` and the SHA-256 fingerprint of that signing certificate, then deploy it. Until Android verifies that association, the public HTTPS listing/message URL continues to fall back to the browser; after verification, Android opens it in Kobo Circle when installed.
