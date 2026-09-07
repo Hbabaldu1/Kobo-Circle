@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+def releaseStoreFile = providers.gradleProperty('KOBO_CIRCLE_RELEASE_STORE_FILE').orElse(providers.environmentVariable('KOBO_CIRCLE_RELEASE_STORE_FILE'))
+def releaseStorePassword = providers.gradleProperty('KOBO_CIRCLE_RELEASE_STORE_PASSWORD').orElse(providers.environmentVariable('KOBO_CIRCLE_RELEASE_STORE_PASSWORD'))
+def releaseKeyAlias = providers.gradleProperty('KOBO_CIRCLE_RELEASE_KEY_ALIAS').orElse(providers.environmentVariable('KOBO_CIRCLE_RELEASE_KEY_ALIAS'))
+def releaseKeyPassword = providers.gradleProperty('KOBO_CIRCLE_RELEASE_KEY_PASSWORD').orElse(providers.environmentVariable('KOBO_CIRCLE_RELEASE_KEY_PASSWORD'))
+
 android {
     namespace "app.kobocircle.android"
     compileSdk rootProject.ext.compileSdkVersion
@@ -8,7 +13,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        // Keep this value in lock-step with public/update-manifest.json.
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,11 +22,30 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (releaseStoreFile.present && releaseStorePassword.present && releaseKeyAlias.present && releaseKeyPassword.present) {
+                storeFile file(releaseStoreFile.get())
+                storePassword releaseStorePassword.get()
+                keyAlias releaseKeyAlias.get()
+                keyPassword releaseKeyPassword.get()
+            }
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    if (graph.allTasks.any { it.name.toLowerCase().contains('release') } &&
+            (!releaseStoreFile.present || !releaseStorePassword.present || !releaseKeyAlias.present || !releaseKeyPassword.present)) {
+        throw new GradleException('Release signing is required. Set the four KOBO_CIRCLE_RELEASE_* secrets documented in RELEASE.md.')
     }
 }
 
