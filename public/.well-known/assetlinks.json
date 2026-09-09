@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.kobocircle.android",
+      "sha256_cert_fingerprints": [
+        "A5:71:68:AB:FB:0E:8E:D2:E6:B0:A3:C8:44:A6:A9:C2:5D:14:2A:5D:62:D7:21:86:77:87:FC:EC:96:33:C4:73"
+      ]
+    }
+  }
+]
