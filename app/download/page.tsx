@@ -12,7 +12,12 @@ export default function DownloadPage() {
         <p className="font-heading text-sm font-bold uppercase tracking-[0.18em] text-adire">Kobo Circle</p>
         <h1 className="mt-3 font-heading text-3xl font-bold tracking-tight text-ink sm:text-4xl">Get Kobo Circle for Android</h1>
         <p className="mt-4 leading-7 text-slate-600">Download the Kobo Circle app directly to your Android phone. It is free.</p>
-        <a href={https://github.com/Hbabaldu1/Kobo-Circle/blob/main/public/downloads/kobo-circle.apk} className="mt-7 inline-flex w-full items-center justify-center rounded-lg bg-adire px-6 py-3.5 text-center font-semibold text-white transition-transform duration-100 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none motion-reduce:active:scale-100 sm:w-auto">Download for Android</a>
+        <a 
+          href={apkUrl} 
+          className="mt-7 inline-flex w-full items-center justify-center rounded-lg bg-adire px-6 py-3.5 text-center font-semibold text-white transition-transform duration-100 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none motion-reduce:active:scale-100 sm:w-auto"
+        >
+          Download for Android
+        </a>
         <div className="mt-9 border-t border-slate-200 pt-7">
           <h2 className="font-heading text-xl font-bold text-ink">How to install it</h2>
           <ol className="mt-5 space-y-5 text-slate-600">
