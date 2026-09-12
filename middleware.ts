@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from '@/types/database';
 
-const PUBLIC_PATHS = new Set(['/', '/login', '/signup', '/check-email', '/auth/callback']);
+const PUBLIC_PATHS = new Set(['/', '/login', '/signup', '/check-email', '/auth/callback', '/download']);
 const SUPABASE_TIMEOUT_MS = 3_500;
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
