@@ -78,7 +78,6 @@ When a domain is available:
 
 Before then, the wrapper may only be used for a clearly labelled internal sandbox test sent to the account's own Resend-verified recipient address. It must not be used for real user signups.
 
-
 ## Security and performance baseline
 
 - Every database table has RLS enabled. The migration provides authenticated-only policies, estate-scoped listing reads and writes, self-vouch prevention, and duplicate-vouch prevention.
@@ -109,4 +108,4 @@ This is intentionally only a **native shell** update check (permissions, Capacit
 
 ### Production deep links
 
-The app registers `https://kobo-circle.vercel.app/...` links. Before publishing a signed APK, replace `public/.well-known/assetlinks.json` with an Android Digital Asset Links statement containing `app.kobocircle.android` and the SHA-256 fingerprint of that signing certificate, then deploy it. Until Android verifies that association, the public HTTPS listing/message URL continues to fall back to the browser; after verification, Android opens it in Kobo Circle when installed.
+The app registers `https://kobo-circle.vercel.app/...` links. Before publishing a signed APK, replace `public/.well-known/assetlinks.json` with an Android Digital Asset Links statement containing `app.koboorcircle.android` and the SHA-256 fingerprint of that signing certificate, then deploy it. Until Android verifies that association, the public HTTPS listing/message URL continues to fall back to the browser; after verification, Android opens it in Kobo Circle when installed.
