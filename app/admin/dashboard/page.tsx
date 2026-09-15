@@ -66,7 +66,7 @@ export default async function AdminDashboardPage() {
   const { data: userProfile } = await authClient.from('users').select('id, is_admin').eq('id', user.id).maybeSingle();
   
   // Step 4: Explicit admin check - redirect if not admin
-  if (!userProfile?.is_admin) {
+  if (!(userProfile as any)?.is_admin) {
     redirect('/feed');
   }
 
