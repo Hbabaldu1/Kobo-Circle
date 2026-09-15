@@ -124,7 +124,7 @@ export function OfflineNotifier() {
               color: 'var(--ink)',
             }}
           >
-            You're Offline
+            You&apos;re Offline
           </h2>
           <p
             className="text-base leading-relaxed"
@@ -133,7 +133,7 @@ export function OfflineNotifier() {
               opacity: 0.75,
             }}
           >
-            Check your internet connection. Kobo Circle will reconnect automatically when you're back online.
+            Check your internet connection. Kobo Circle will reconnect automatically when you&apos;re back online.
           </p>
         </div>
 
