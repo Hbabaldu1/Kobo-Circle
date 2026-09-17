@@ -53,30 +53,24 @@ interface MetricsData {
 }
 
 export default async function AdminDashboardPage() {
-  // Step 1: Authenticate user with auth server client (cookie-based)
   const authClient = createAuthServerClient();
   const { data: { user } } = await authClient.auth.getUser();
-  
-  // Step 2: Redirect if not authenticated
+
   if (!user) {
     redirect('/login');
   }
 
-  // Step 3: Get user profile from public.users table (auth client)
   const { data: userProfile } = await authClient.from('users').select('id, is_admin').eq('id', user.id).maybeSingle();
-  
-  // Step 4: Explicit admin check - redirect if not admin
+
   if (!(userProfile as any)?.is_admin) {
     redirect('/feed');
   }
 
-  // Step 5: Now that we know user is admin, use service role client for global queries
   const serviceClient = createServerSupabaseClient();
   if (!serviceClient) {
     throw new Error('Service role client not available');
   }
 
-  // Fetch all metrics using service role client
   const metricsData = await fetchMetrics(serviceClient);
 
   return <AdminDashboard metrics={metricsData} />;
@@ -85,41 +79,34 @@ export default async function AdminDashboardPage() {
 async function fetchMetrics(client: ReturnType<typeof createServerSupabaseClient>): Promise<MetricsData> {
   if (!client) throw new Error('Service client required');
 
-  // 1. Total registered users
   const { count: totalUsersCount } = await client
     .from('users')
     .select('id', { count: 'exact', head: true });
 
-  // 2. Active users (last 30 days) - join with auth.users via raw SQL since auth schema is not in Database type
-  // For now, we'll use a conservative estimate based on recent messages/vouches
-  // or query auth.users table if accessible
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  
-  // Get users with recent activity (messages or vouches in last 30 days)
+
   const { data: recentMessageSenders } = await client
     .from('messages')
-    .select('sender_id', { distinct: true })
+    .select('sender_id')
     .gte('created_at', thirtyDaysAgo);
-  
+
   const { data: recentVouchers } = await client
     .from('vouches')
-    .select('voucher_id', { distinct: true })
+    .select('voucher_id')
     .gte('created_at', thirtyDaysAgo);
-  
+
   const activeUserIds = new Set([
     ...(recentMessageSenders?.map(m => m.sender_id) ?? []),
     ...(recentVouchers?.map(v => v.voucher_id) ?? []),
   ]);
   const activeUsersCount = activeUserIds.size;
 
-  // 3. Total sellers (users with at least one listing)
   const { data: sellersData } = await client
     .from('listings')
-    .select('user_id', { distinct: true });
+    .select('user_id');
   const sellerIds = new Set(sellersData?.map(l => l.user_id) ?? []);
   const totalSellersCount = sellerIds.size;
 
-  // 4. Listings breakdown
   const { count: totalListingsCount } = await client
     .from('listings')
     .select('id', { count: 'exact', head: true });
@@ -154,7 +141,6 @@ async function fetchMetrics(client: ReturnType<typeof createServerSupabaseClient
     .select('id', { count: 'exact', head: true })
     .eq('status', 'closed');
 
-  // 5. Conversations and messages
   const { count: conversationCount } = await client
     .from('conversations')
     .select('id', { count: 'exact', head: true });
@@ -163,7 +149,6 @@ async function fetchMetrics(client: ReturnType<typeof createServerSupabaseClient
     .from('messages')
     .select('id', { count: 'exact', head: true });
 
-  // 6. Vouches breakdown
   const { count: totalVouchCount } = await client
     .from('vouches')
     .select('id', { count: 'exact', head: true });
@@ -183,10 +168,9 @@ async function fetchMetrics(client: ReturnType<typeof createServerSupabaseClient
     .select('id', { count: 'exact', head: true })
     .eq('vouch_type', 'transaction');
 
-  // 7. Repeat users (users with >1 listing OR >1 vouch)
   const { data: userListingCounts } = await client
     .from('listings')
-    .select('user_id', { count: 'exact', distinct: true })
+    .select('user_id')
     .then(async (res) => {
       if (!res.data) return { data: null };
       const users: Record<string, number> = {};
@@ -214,15 +198,11 @@ async function fetchMetrics(client: ReturnType<typeof createServerSupabaseClient
   ]);
   const repeatUsersCount = repeatUserIds.size;
 
-  // 8. Completed transactions estimate (sold listings + transaction vouches)
   const soldListings = soldCount ?? 0;
   const transactionVouches = transactionVouchCount ?? 0;
   const completedTransactionsEstimate = `${Math.max(soldListings, transactionVouches)} (estimated via sold listings & transaction vouches)`;
-
-  // 9. Successful seller interactions estimate (transaction vouches received per seller)
   const successfulSellerInteractionsEstimate = `${transactionVouchCount ?? 0} (estimated via transaction vouches)`;
 
-  // 10. Metrics by state
   const { data: statesData } = await client.from('states').select('id, name');
   const byState = await Promise.all(
     (statesData ?? []).map(async (state) => {
@@ -260,9 +240,9 @@ async function fetchMetrics(client: ReturnType<typeof createServerSupabaseClient
       bySale: saleSaleCount ?? 0,
       byService: serviceCount ?? 0,
       byRequest: requestCount ?? 0,
-      activeSale: activeCount ?? 0, // Placeholder
-      activeService: 0, // Would need separate query
-      activeRequest: 0, // Would need separate query
+      activeSale: activeCount ?? 0,
+      activeService: 0,
+      activeRequest: 0,
       sold: soldCount ?? 0,
       closed: closedCount ?? 0,
     },

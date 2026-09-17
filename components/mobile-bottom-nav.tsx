@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { Home, MessageSquare, PlusSquare, User } from 'lucide-react';
+import { Home, MessageSquare, PlusSquare, User, Users } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 const tabs = [
   { href: '/feed', label: 'Feed', icon: Home },
+  { href: '/directory', label: 'Community', icon: Users },
   { href: '/new-listing', label: 'Add Post', icon: PlusSquare },
   { href: '/messages', label: 'Messages', icon: MessageSquare },
   { href: '/profile', label: 'Profile', icon: User },
@@ -64,9 +65,9 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label="Mobile navigation"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] dark:bg-slate-900/95 shadow-[0_-4px_16px_rgba(27,31,59,0.08)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgba(27,31,59,0.08)] backdrop-blur dark:bg-slate-900/95 md:hidden"
     >
-      <div className="sticky mx-auto grid max-w-lg grid-cols-4">
+      <div className="sticky mx-auto grid max-w-lg grid-cols-5">
         {tabs.map((tab) => {
           const IconComponent = tab.icon;
           const active = pathname === tab.href || (tab.href === '/messages' && pathname.startsWith('/messages'));
